@@ -25,7 +25,9 @@ export default function ForgotPassword() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
 
-  const baseUrl = "http://localhost:2001";
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+    // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
+
 
   // Updated validation functions to handle both email and phone
   const validateEmail = (email: string) => {
@@ -123,7 +125,7 @@ export default function ForgotPassword() {
 
   const FormLayout = () => {
     return (
-      <View className="flex-1 items-center pt-32 p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+      <View className="flex-1 items-center pt-32 p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
         {/* <View className="mb-8 w-full">
           <Text className="text-[#170202] text-2xl font-medium text-center mb-2">
             Forgot Password?
@@ -189,7 +191,7 @@ export default function ForgotPassword() {
       {Platform.OS === "web" ? (
         <>
           <BackButton title="Forgot Password" />
-          {/* <View style={{ height: 50, backgroundColor: "#000000E3" }} /> */}
+          {/* <View style={{ height: 50, backgroundColor: "#0D0D0D" }} /> */}
 
           <ScrollView
             contentContainerStyle={{
@@ -203,7 +205,7 @@ export default function ForgotPassword() {
       ) : (
         <>
           <BackButton title="Forgot Password" />
-          {/* <View style={{ height: 50, backgroundColor: "#000000E3" }} /> */}
+          {/* <View style={{ height: 50, backgroundColor: "#0D0D0D" }} /> */}
 
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}

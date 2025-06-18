@@ -660,7 +660,9 @@ import Toast from "react-native-toast-message";
 const Home = () => {
   const router = useRouter();
   // const baseUrl = "https://next-node-auth.onrender.com";
-    const baseUrl = "http://localhost:2001";
+    const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+
+      // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
 
 
   const [showModal, setShowModal] = useState(false);
@@ -901,7 +903,7 @@ const Home = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      {/* <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" /> */}
       <View
         style={{
           flex: 1,

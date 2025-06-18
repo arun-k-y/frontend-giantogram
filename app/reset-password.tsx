@@ -34,8 +34,9 @@ export default function ResetPassword() {
     confirmPassword: false,
   });
 
-  const baseUrl = "http://localhost:2001"; // Change to your actual base URL
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com"; // Change to your actual base URL
   // const baseUrl = "https://next-node-auth.onrender.com"; // For production
+      // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
 
   const validateInputs = () => {
     const errors = {
@@ -140,7 +141,7 @@ export default function ResetPassword() {
 
   const FormLayout = () => {
     return (
-      <View className="flex-1 items-center pt-32 p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+      <View className="flex-1 items-center pt-32 p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
         <View className="mb-8 w-full">
           <Text className="text-white text-5xl font-medium text-center mb-2">
             Set New Password

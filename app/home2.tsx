@@ -24,14 +24,22 @@ import {
   Edit3,
   Trash2,
   Upload,
+  SendIcon,
+  LogOutIcon,
 } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export default function HomePage() {
   const [profileImage, setProfileImage] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [username, setUsername] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<
+    "deactivate" | "logout" | "reactivate"
+  >("logout");
+  const router = useRouter();
   const handleProfilePress = () => {
     setShowProfileModal(true);
   };
@@ -104,6 +112,9 @@ export default function HomePage() {
       return () => subscription.remove();
     }, [])
   );
+  // const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
   const fetchUserData = async () => {
     try {
@@ -114,7 +125,7 @@ export default function HomePage() {
         return;
       }
 
-      const res = await fetch(`http://localhost:2001/api/auth/protected`, {
+      const res = await fetch(`${baseUrl}/api/auth/protected`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +144,7 @@ export default function HomePage() {
       setUsername(data.user.username);
 
       const imageUrl = data?.user?.profilePicture
-        ? `http://localhost:2001${data.user.profilePicture}`
+        ? `https://my-react-app-latest-8e2v.onrender.com${data.user.profilePicture}`
         : null;
 
       setProfileImage(imageUrl);
@@ -151,17 +162,41 @@ export default function HomePage() {
     { icon: Target, label: "Target" },
   ];
 
+  const confirmLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove([
+        "userToken",
+        "isDeactivated",
+        "userEmail",
+      ]);
+      Alert.alert("Success", "Logged out successfully");
+      router.replace("/login"); // or use navigation.replace("Login");
+    } catch (error) {
+      console.error("Logout Error:", error);
+      Alert.alert("Error", "Failed to logout. Please try again.");
+    }
+  };
+
+  // Called when confirm button in modal is pressed
+  const confirmAction = () => {
+    setShowModal(false);
+    if (modalType === "logout") {
+      confirmLogout();
+    }
+    // You can extend this for other modalType actions like "deactivate" or "reactivate"
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Giantogram</Text>
+        <Text style={styles.headerTitle}>GIANTOGRAM</Text>
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton}>
-            <Target color="#ffffff" size={20} />
+            <Search color="#ffffff" size={20} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
-            <Camera color="#ffffff" size={20} />
+            <SendIcon color="#ffffff" size={20} />
           </TouchableOpacity>
         </View>
       </View>
@@ -176,6 +211,7 @@ export default function HomePage() {
             <TouchableOpacity
               onPress={handleProfilePress}
               style={styles.profileImageContainer}
+              disabled
             >
               {profileImage ? (
                 <Image
@@ -183,21 +219,40 @@ export default function HomePage() {
                   style={styles.profileImage}
                 />
               ) : (
-                <View style={styles.profilePlaceholder}>
-                  <User color="#666666" size={40} />
-                </View>
+                // <View style={styles.profilePlaceholder}>
+                //   <User color="#666666" size={40} />
+                // </View>
+
+                <Image
+                  source={require("../assets/images/profile-pic.jpg")}
+                  style={styles.profileImage}
+                />
               )}
             </TouchableOpacity>
 
             <View style={styles.profileActions}>
-              <TouchableOpacity style={styles.actionButton}>
+              {/* <TouchableOpacity style={styles.actionButton}>
                 <Camera color="#ffffff" size={18} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
+              </TouchableOpacity> */}
+              {/* <TouchableOpacity style={styles.actionButton}>
                 <Search color="#ffffff" size={18} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton}>
                 <Send color="#ffffff" size={18} />
+              </TouchableOpacity> */}
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalType("logout");
+                  setShowModal(true);
+                  setShowProfileModal(false);
+                }}
+              >
+                <LogOutIcon color="#FF9800" size={20} />
+                <Text style={[styles.modalButtonText, { color: "#FF9800" }]}>
+                  Sign Out
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -260,6 +315,152 @@ export default function HomePage() {
             >
               <Text style={styles.modalButtonText}>Cancel</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showModal} transparent animationType="fade">
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.6)",
+            paddingHorizontal: 20,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: 24,
+              padding: 32,
+              width: "100%",
+              maxWidth: 400,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 20 },
+              shadowOpacity: 0.25,
+              shadowRadius: 25,
+              elevation: 25,
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
+                backgroundColor:
+                  modalType === "deactivate"
+                    ? "#FEE2E2"
+                    : modalType === "logout"
+                    ? "#FEF3C7"
+                    : "#D1FAE5",
+              }}
+            >
+              <Text style={{ fontSize: 36 }}>
+                {modalType === "deactivate"
+                  ? "⚠️"
+                  : modalType === "logout"
+                  ? "🚪"
+                  : "✅"}
+              </Text>
+            </View>
+
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "700",
+                color: "#111827",
+                textAlign: "center",
+                marginBottom: 12,
+              }}
+            >
+              {modalType === "deactivate"
+                ? "Deactivate Account"
+                : modalType === "logout"
+                ? "Sign Out"
+                : "Reactivate Account"}
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#6B7280",
+                textAlign: "center",
+                marginBottom: 28,
+                lineHeight: 24,
+              }}
+            >
+              {modalType === "deactivate"
+                ? "Your account will be temporarily deactivated. You can reactivate it anytime by signing in again."
+                : modalType === "logout"
+                ? "Are you sure you want to sign out of your account?"
+                : "Your account will be reactivated and you'll regain full access to all features."}
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 12,
+                width: "100%",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setShowModal(false)}
+                style={{
+                  flex: 1,
+                  backgroundColor: "#F9FAFB",
+                  paddingVertical: 16,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  borderWidth: 1,
+                  borderColor: "#E5E7EB",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#374151",
+                    fontWeight: "600",
+                    fontSize: 16,
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={confirmAction}
+                style={{
+                  flex: 1,
+                  paddingVertical: 16,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  backgroundColor:
+                    modalType === "deactivate"
+                      ? "#F59E0B"
+                      : modalType === "logout"
+                      ? "#EF4444"
+                      : "#10B981",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: 16,
+                  }}
+                >
+                  {modalType === "deactivate"
+                    ? "Deactivate"
+                    : modalType === "logout"
+                    ? "Sign Out"
+                    : "Reactivate"}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -589,9 +790,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 20,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "#0D0D0D",
   },
   headerTitle: {
     color: "#ffffff",
@@ -680,9 +881,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "#0D0D0D",
     paddingVertical: 15,
-    paddingBottom: 30,
+    paddingBottom: 15,
   },
   navItem: {
     padding: 10,

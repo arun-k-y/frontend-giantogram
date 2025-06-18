@@ -575,13 +575,19 @@ import {
   Dimensions,
   Alert,
   SafeAreaView,
-  StatusBar,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { Ionicons } from "@expo/vector-icons";
+// import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import Svg, { Rect, Circle } from "react-native-svg";
+import {
+  ArrowLeft,
+  Camera,
+  Flashlight,
+  FlashlightOff,
+  RefreshCw,
+} from "lucide-react-native";
 
 // Constants
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -698,7 +704,7 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
   if (!permission) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="black" />
+        {/* <StatusBar barStyle="light-content" backgroundColor="black" /> */}
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading camera...</Text>
         </View>
@@ -709,14 +715,16 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
   if (!permission.granted) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="black" />
+        {/* <StatusBar barStyle="light-content" backgroundColor="black" /> */}
         <View style={styles.permissionContainer}>
-          <Ionicons
+          {/* <Ionicons
             name="camera-outline"
             size={64}
             color="white"
             style={styles.permissionIcon}
-          />
+          /> */}
+
+          <Camera size={64} color="white" style={styles.permissionIcon} />
           <Text style={styles.permissionTitle}>Camera Access Required</Text>
           <Text style={styles.permissionMessage}>
             We need camera permission to take photos
@@ -737,25 +745,10 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
   // Main camera view
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="black" />
+      {/* <StatusBar barStyle="light-content" backgroundColor="black" /> */}
 
       {/* Header */}
       <SafeAreaView>
-        {/* <View style={styles.header} >
-          <TouchableOpacity 
-            onPress={handleClose} 
-            style={styles.backButton}
-            accessibilityLabel="Close camera"
-            accessibilityRole="button"
-          >
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          
-          <Text style={styles.title} className="text-black">Take Photo</Text>
-          
-          <View style={styles.headerSpacer} />
-        </View> */}
-
         <View className="mx-4 flex-row items-center justify-between bg-white rounded-md h-12 px-2">
           <TouchableOpacity
             onPress={handleClose}
@@ -763,14 +756,15 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
             accessibilityLabel="Close camera"
             accessibilityRole="button"
           >
-            <Ionicons name="arrow-back" size={20} color="black" />
+            {/* <Ionicons name="arrow-back" size={20} color="black" /> */}
+            <ArrowLeft size={20} color={"black"} />
           </TouchableOpacity>
           <View className="absolute left-0 right-0 items-center">
             <Text className="text-black text-base font-semibold">
               Take Photo
             </Text>
           </View>
-          <View className="w-10" /> {/* spacer same size as back button */}
+          <View className="w-10" />
         </View>
       </SafeAreaView>
 
@@ -851,11 +845,16 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
               }`}
               accessibilityRole="button"
             >
-              <Ionicons
+              {/* <Ionicons
                 name={cameraState.flashMode === "off" ? "flash-off" : "flash"}
                 size={24}
                 color="white"
-              />
+              /> */}
+              {cameraState.flashMode === "off" ? (
+                <FlashlightOff size={24} color="white" />
+              ) : (
+                <Flashlight size={24} color="white" />
+              )}
             </TouchableOpacity>
 
             {/* Capture button */}
@@ -881,7 +880,9 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
               } camera`}
               accessibilityRole="button"
             >
-              <Ionicons name="camera-reverse-outline" size={24} color="white" />
+              {/* <Ionicons name="camera-reverse-outline" size={24} color="white" /> */}
+
+              <RefreshCw size={24} color="white" />
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -978,7 +979,7 @@ const styles = StyleSheet.create({
   },
   circleBorder: {
     position: "absolute",
-    borderWidth: 2,
+    borderWidth: 6,
     borderColor: "white",
   },
   controlsOverlay: {

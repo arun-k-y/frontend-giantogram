@@ -31,7 +31,9 @@ export default function Verify2FA() {
   const maskedDestination = params.maskedDestination || "";
   const identifier = params.identifier || "";
 
-  const baseUrl = "http://localhost:2001";
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+
+  // const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -231,7 +233,7 @@ export default function Verify2FA() {
 
   const FormLayout = () => {
     return (
-      <View className="flex-1 items-center justify-start p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+      <View className="flex-1 items-center justify-start p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
         {/* Message */}
         <View className="mb-5 mt-10 w-full">
           <Text className="text-white text-base leading-6 text-start">

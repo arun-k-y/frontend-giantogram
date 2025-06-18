@@ -26,7 +26,9 @@ export default function Login() {
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
 
-  const baseUrl = "http://localhost:2001";
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+      // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
+
   const [fieldErrors, setFieldErrors] = useState({
     identifier: false, // Changed from email to identifier
     password: false,
@@ -198,7 +200,7 @@ export default function Login() {
 
   const FormLayout = () => {
     return (
-      <View className="flex-1 items-center justify-center p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+      <View className="flex-1 items-center justify-center p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
         <EmailOrPhoneInput
           identifier={identifier}
           onChange={(value) => {

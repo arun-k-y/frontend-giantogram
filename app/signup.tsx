@@ -49,7 +49,7 @@
 //   // const genderOptions = ["Male", "Female", "Other"];
 
 //   // const baseUrl = "https://next-node-auth.onrender.com";
-//   const baseUrl = "http://localhost:2001";
+//   const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
 //   const detectInputType = (input: string) => {
 //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -241,7 +241,7 @@
 //   };
 
 //   const FormLayout = () => (
-//     <View className="flex-1 justify-center items-center p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+//     <View className="flex-1 justify-center items-center p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
 //       {/* Custom Back Button */}
 
 //       <TextInput
@@ -486,7 +486,7 @@
 //   return Platform.OS === "web" ? (
 //     <>
 //       {/* Fixed Back Button */}
-//       <View className="w-full bg-[#000000E3] px-4 py-3 z-50 flex-row items-center">
+//       <View className="w-full bg-[#0D0D0D] px-4 py-3 z-50 flex-row items-center">
 //         <TouchableOpacity
 //           onPress={() => router.back()}
 //           className="flex-row items-center w-fit"
@@ -508,7 +508,7 @@
 //   ) : (
 //     <>
 //       {/* Fixed Back Button */}
-//       <View className="w-full bg-[#000000E3] px-4 py-3 z-50 flex-row items-center">
+//       <View className="w-full bg-[#0D0D0D] px-4 py-3 z-50 flex-row items-center">
 //         <TouchableOpacity
 //           onPress={() => router.back()}
 //           className="flex-row items-center w-fit"
@@ -585,7 +585,7 @@
 //     dob: false,
 //   });
 
-//   const baseUrl = "http://localhost:2001";
+//   const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
 //   const detectInputType = (input: string) => {
 //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -781,7 +781,7 @@
 //   const isMobileInput = /^\d+$/.test(emailOrMobile) && emailOrMobile !== "";
 
 //   const FormLayout = () => (
-//     <View className="flex-1 justify-center items-center p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+//     <View className="flex-1 justify-center items-center p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
 //       <TextInput
 //         className={getInputStyle(fieldErrors.username) + " mb-4"}
 //         placeholder="Username"
@@ -1088,7 +1088,8 @@ export default function SignUp() {
     dob: false,
   });
 
-  const baseUrl = "http://localhost:2001";
+  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+  // const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
   const detectInputType = (input: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1385,7 +1386,7 @@ export default function SignUp() {
   const minDateString = minDate.toISOString().split("T")[0];
 
   const FormLayout = () => (
-    <View className="flex-1 justify-center items-center p-4 bg-[#000000E3] w-full md:w-[500px] self-center">
+    <View className="flex-1 justify-center items-center p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
       <TextInput
         className={getInputStyle(fieldErrors.username) + " mb-4"}
         placeholder="Username"

@@ -17,7 +17,7 @@ const BackButton: React.FC<BackButtonProps> = ({
   const router = useRouter();
 
   return (
-    <View className="w-full bg-[#000000E3] px-4 py-3 z-50 flex-row items-center ">
+    <View className="w-full bg-[#0D0D0D] px-4 py-3 z-50 flex-row items-center ">
       <TouchableOpacity
         onPress={onPress || (() => router.back())}
         className="flex-row items-center"
