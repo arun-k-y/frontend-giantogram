@@ -935,6 +935,108 @@ export default function ProfilePicUploader({
   //   [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
   // );
 
+  // const uploadImage = useCallback(
+  //   async (isUpdate = false) => {
+  //     if (!image?.uri) {
+  //       Alert.alert("No Image", "Please select an image first.");
+  //       return;
+  //     }
+
+  //     console.log("📤 Starting image upload...");
+  //     setUploading(true);
+  //     setUploadError(null);
+  //     clearUploadTimeout();
+
+  //     // Set timeout fallback
+  //     uploadTimeoutRef.current = setTimeout(() => {
+  //       setUploading(false);
+  //       setUploadError("Upload timeout. Please try again.");
+  //       Alert.alert(
+  //         "Upload Timeout",
+  //         "The upload is taking too long. Please check your connection and try again."
+  //       );
+  //     }, 30000); // 30 seconds
+
+  //     try {
+  //       // Extract filename and MIME type
+  //       const uriParts = image.uri.split("/");
+  //       const filename =
+  //         uriParts[uriParts.length - 1] || `profile_${Date.now()}.jpg`;
+  //       const mimeType = image.mimeType || "image/jpeg";
+
+  //       // Read file as base64
+  //       const base64Image = await FileSystem.readAsStringAsync(image.uri, {
+  //         encoding: FileSystem.EncodingType.Base64,
+  //       });
+
+  //       console.log("📦 Read image as base64.");
+
+  //       const formData = new FormData();
+  //       formData.append("profilePicture", {
+  //         uri: image.uri,
+  //         name: filename,
+  //         type: mimeType,
+  //       } as any);
+
+  //       if (isUpdate) {
+  //         formData.append("isUpdate", "true");
+  //       }
+
+  //       const token = await AsyncStorage.getItem("userToken");
+  //       if (!token) {
+  //         throw new Error("Authentication required. Please log in again.");
+  //       }
+
+  //       console.log("🔑 Retrieved token:", token);
+  //       console.log(
+  //         "🌐 Sending request to:",
+  //         `${baseUrl}/api/auth/upload-profile`
+  //       );
+
+  //       const response = await fetch(`${baseUrl}/api/auth/upload-profile`, {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           // ⚠️ Do NOT set Content-Type manually with FormData
+  //         },
+  //         body: formData,
+  //       });
+
+  //       const res = await response.json()
+
+  //       if(res){
+  //         console.log("result.....", res)
+  //       }
+  //       clearUploadTimeout();
+  //       if (!response.ok) {
+  //         const errorData = await response.json().catch(() => ({}));
+  //         throw new Error(
+  //           errorData.message || `Upload failed with status ${response.status}`
+  //         );
+  //       }
+
+  //       const data = await response.json();
+  //       const uploadedUrl = data?.url || data?.profilePicture || preview;
+
+  //       console.log("✅ Upload success:", uploadedUrl);
+
+  //       onUpload?.(uploadedUrl);
+  //       setImage(null);
+  //       setCurrentScreen(SCREENS.CONFIRMATION);
+  //     } catch (error: any) {
+  //       console.error("❌ Upload error:", error);
+  //       const errorMessage =
+  //         error.message || "Upload failed. Please try again.";
+  //       setUploadError(errorMessage);
+  //       Alert.alert("Upload Failed", errorMessage);
+  //     } finally {
+  //       setUploading(false);
+  //       clearUploadTimeout();
+  //     }
+  //   },
+  //   [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
+  // );
+
   const uploadImage = useCallback(
     async (isUpdate = false) => {
       if (!image?.uri) {
@@ -942,54 +1044,39 @@ export default function ProfilePicUploader({
         return;
       }
 
-      console.log("📤 Starting image upload...");
-      setUploading(true);
-      setUploadError(null);
-      clearUploadTimeout();
-
-      // Set timeout fallback
-      uploadTimeoutRef.current = setTimeout(() => {
-        setUploading(false);
-        setUploadError("Upload timeout. Please try again.");
-        Alert.alert(
-          "Upload Timeout",
-          "The upload is taking too long. Please check your connection and try again."
-        );
-      }, 30000); // 30 seconds
-
       try {
-        // Extract filename and MIME type
-        const uriParts = image.uri.split("/");
-        const filename =
-          uriParts[uriParts.length - 1] || `profile_${Date.now()}.jpg`;
-        const mimeType = image.mimeType || "image/jpeg";
+        console.log("🟡 Starting image upload...");
+        setUploading(true);
+        setUploadError(null);
+        clearUploadTimeout();
 
-        // Read file as base64
-        const base64Image = await FileSystem.readAsStringAsync(image.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+        const token = await AsyncStorage.getItem("userToken");
+        if (!token)
+          throw new Error("Authentication required. Please log in again.");
+        console.log("✅ Retrieved token:", token);
 
-        console.log("📦 Read image as base64.");
+        // Convert local file URI to a Cloudinary-compatible file
+        const fileUri = image.uri;
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
+        if (!fileInfo.exists) throw new Error("File does not exist");
 
         const formData = new FormData();
+        const filename =
+          fileUri.split("/").pop() || `profile_${Date.now()}.jpg`;
+        const fileType = "image/jpeg";
+
         formData.append("profilePicture", {
-          uri: image.uri,
+          uri: fileUri,
           name: filename,
-          type: mimeType,
+          type: fileType,
         } as any);
 
         if (isUpdate) {
           formData.append("isUpdate", "true");
         }
 
-        const token = await AsyncStorage.getItem("userToken");
-        if (!token) {
-          throw new Error("Authentication required. Please log in again.");
-        }
-
-        console.log("🔑 Retrieved token:", token);
         console.log(
-          "🌐 Sending request to:",
+          "📤 Sending request to:",
           `${baseUrl}/api/auth/upload-profile`
         );
 
@@ -997,18 +1084,11 @@ export default function ProfilePicUploader({
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            // ⚠️ Do NOT set Content-Type manually with FormData
+            // Do not set Content-Type manually — let fetch set it for FormData
           },
           body: formData,
         });
 
-
-        const res = await response.json()
-
-        if(res){
-          console.log("result.....", res)
-        }
-        clearUploadTimeout();
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
@@ -1017,19 +1097,16 @@ export default function ProfilePicUploader({
         }
 
         const data = await response.json();
+        console.log("✅ Upload result:", data);
+
         const uploadedUrl = data?.url || data?.profilePicture || preview;
-
-        console.log("✅ Upload success:", uploadedUrl);
-
         onUpload?.(uploadedUrl);
         setImage(null);
         setCurrentScreen(SCREENS.CONFIRMATION);
       } catch (error: any) {
         console.error("❌ Upload error:", error);
-        const errorMessage =
-          error.message || "Upload failed. Please try again.";
-        setUploadError(errorMessage);
-        Alert.alert("Upload Failed", errorMessage);
+        setUploadError(error.message || "Upload failed. Please try again.");
+        Alert.alert("Upload Failed", error.message || "Unknown error");
       } finally {
         setUploading(false);
         clearUploadTimeout();
@@ -1185,8 +1262,14 @@ export default function ProfilePicUploader({
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.welcomeContent}>
-        <Text style={styles.welcomeTitle}>Welcome to Giantogram</Text>
+        {/* <Text style={styles.welcomeTitle}>Welcome to Giantogram</Text>
         <Text style={styles.welcomeSubtitle}>
+          Platform that provides everything
+        </Text> */}
+        <Text className="text-white font-normal text-2xl">
+          Welcome to Giantogram
+        </Text>
+        <Text className="text-white font-normal text-2xl mt-5 mb-6">
           Platform that provides everything
         </Text>
 
@@ -1197,7 +1280,11 @@ export default function ProfilePicUploader({
           />
         </View>
 
-        <Text style={styles.welcomeMessage}>
+        {/* <Text style={styles.welcomeMessage}>
+          You became the member of this network and you matter for us
+        </Text> */}
+
+        <Text className="text-white text-2xl font-normal mt-5">
           You became the member of this network and you matter for us
         </Text>
       </View>

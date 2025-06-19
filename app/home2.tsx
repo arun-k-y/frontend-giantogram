@@ -144,7 +144,7 @@ export default function HomePage() {
       setUsername(data.user.username);
 
       const imageUrl = data?.user?.profilePicture
-        ? `https://my-react-app-latest-8e2v.onrender.com${data.user.profilePicture}`
+        ? data?.user?.profilePicture
         : null;
 
       setProfileImage(imageUrl);
