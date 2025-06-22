@@ -31,9 +31,9 @@ export default function Verify2FA() {
   const maskedDestination = params.maskedDestination || "";
   const identifier = params.identifier || "";
 
-  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+  const baseUrl = "http://localhost:2001";
 
-  // const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
+  // const baseUrl = "http://localhost:2001";
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -244,8 +244,8 @@ export default function Verify2FA() {
         {/* OTP Input */}
         <View className="w-full mb-8">
           <TextInput
-            className="w-full h-[61px] text-lg text-[#1F1E1E] bg-white border border-[#B2EBF2] rounded-[10px] py-5 px-5 text-center"
-            placeholder="Enter 6-digit code"
+            className="w-full h-[61px] text-lg text-[#1F1E1E] bg-white border border-[#B2EBF2] rounded-[10px] py-5 px-5 text-start"
+            placeholder="Enter OTP"
             value={otp}
             onChangeText={(text) => {
               // Only allow numbers and limit to 6 digits

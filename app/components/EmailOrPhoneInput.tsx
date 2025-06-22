@@ -22,6 +22,7 @@ interface EmailOrPhoneInputProps {
   setSelectedCountryCode: (code: string) => void;
   showDropdown: boolean;
   setShowDropdown: (show: boolean) => void;
+  placeholder?: string;
 }
 
 const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
@@ -32,6 +33,7 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
   setSelectedCountryCode,
   showDropdown,
   setShowDropdown,
+  placeholder = "Email or Phone Number",
 }) => {
   const trimmedIdentifier = identifier.trim();
   const identifierType = getIdentifierType(trimmedIdentifier);
@@ -71,12 +73,12 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
         //     ? "bg-white border border-[#FF6B6B] border-l-0"
         //     : "bg-white border border-[#B2EBF2] border-l-0"
         // } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
-         className={`flex-1  h-[61px] text-lg py-5 px-5 ${
+        className={`flex-1  h-[61px] text-lg py-5 px-5 ${
           fieldError
             ? "bg-white border text-[#E12D39] border-[#FF6B6B] border-l-0"
             : "bg-white border text-[#1F1E1E] border-[#B2EBF2] border-l-0"
         } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
-        placeholder="Email or Phone Number"
+        placeholder={placeholder}
         value={identifier}
         onChangeText={onChange}
         keyboardType="default"

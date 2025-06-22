@@ -34,9 +34,9 @@ export default function ResetPassword() {
     confirmPassword: false,
   });
 
-  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com"; // Change to your actual base URL
+  const baseUrl = "http://localhost:2001"; // Change to your actual base URL
   // const baseUrl = "https://next-node-auth.onrender.com"; // For production
-      // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
+      // const baseUrl = 'http://localhost:2001'
 
   const validateInputs = () => {
     const errors = {
@@ -149,12 +149,12 @@ export default function ResetPassword() {
         </View>
 
         <TextInput
-          className={`w-full  h-[61px] text-lg rounded-[10px] py-5 px-5 mb-6 text-center tracking-widest ${
+          className={`w-full  h-[61px] text-lg rounded-[10px] py-5 px-5 mb-6 text-start ${
             fieldErrors.resetCode
               ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
               : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
           }`}
-          placeholder="Reset Code (6 digits)"
+          placeholder="Enter OTP"
           value={resetCode}
           onChangeText={(code) => {
             // Only allow numbers and limit to 6 digits
@@ -174,7 +174,7 @@ export default function ResetPassword() {
                 ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
-            placeholder="New Password"
+            placeholder="Create Password"
             value={newPassword}
             onChangeText={(password) => {
               setNewPassword(password);
@@ -207,7 +207,7 @@ export default function ResetPassword() {
                 ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
-            placeholder="Confirm New Password"
+            placeholder="Re - Enter New Password"
             value={confirmPassword}
             onChangeText={(password) => {
               setConfirmPassword(password);

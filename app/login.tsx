@@ -26,8 +26,8 @@ export default function Login() {
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
 
-  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
-      // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
+  const baseUrl = "http://localhost:2001";
+      // const baseUrl = 'http://localhost:2001'
 
   const [fieldErrors, setFieldErrors] = useState({
     identifier: false, // Changed from email to identifier
@@ -212,6 +212,7 @@ export default function Login() {
           setSelectedCountryCode={setSelectedCountryCode}
           showDropdown={showCountryCodeDropdown}
           setShowDropdown={setShowCountryCodeDropdown}
+          placeholder="NUMBER, EMAIL OR USERNAME"
         />
 
         <View className="w-full mb-12 relative">
@@ -219,7 +220,7 @@ export default function Login() {
             className={`w-full  h-[61px] text-lg rounded-[10px] py-5 px-5 pr-14 ${getInputStyle(
               fieldErrors.password
             )}`}
-            placeholder="Password"
+            placeholder="PASSWORD"
             value={password}
             onChangeText={(password) => {
               setPassword(password);
@@ -267,7 +268,7 @@ export default function Login() {
 
           <TouchableOpacity
             className="bg-white py-2 px-2 rounded-lg"
-            onPress={() => router.push("/forgot-password")}
+            onPress={() => router.push("/reset-password")}
           >
             <Text className="text-[#332E2E] font-normal">Forgot Password?</Text>
           </TouchableOpacity>

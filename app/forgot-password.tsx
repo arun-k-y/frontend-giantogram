@@ -25,8 +25,8 @@ export default function ForgotPassword() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
 
-  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
-    // const baseUrl = 'https://my-react-app-latest-8e2v.onrender.com'
+  const baseUrl = "http://localhost:2001";
+    // const baseUrl = 'http://localhost:2001'
 
 
   // Updated validation functions to handle both email and phone
