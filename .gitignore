@@ -50,3 +50,32 @@ entry-*.js
 .DS_Store
 .DS_Store?
 ._*
+
+
+
+# Expo
+.expo/
+.expo-shared/
+
+# Node
+node_modules/
+
+# Android
+android/.gradle/
+android/app/build/
+
+# iOS
+ios/Pods/
+ios/build/
+
+# Build outputs
+dist/
+web/build/
+.next/
+.turbo/
+
+# Logs
+*.log
+
+# macOS system files
+.DS_Store
