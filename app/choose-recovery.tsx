@@ -196,7 +196,6 @@
 //   },
 // });
 
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -204,6 +203,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import BackButton from "./components/BackButton";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -324,14 +324,32 @@ export default function ChooseRecoveryMethod() {
         </View>
 
         <TouchableOpacity
-          style={[styles.confirmButton, loading && { opacity: 0.6 }]}
+          style={[styles.confirmButton]}
           onPress={handleConfirm}
           disabled={loading}
         >
-          <Text style={styles.confirmText}>
-            {loading ? "Loading..." : "Confirm"}
-          </Text>
+          {loading ? (
+            <ActivityIndicator size={24} color="#000000" />
+          ) : (
+            <Text className="text-[#000000] text-center font-normal text-lg">
+              Confirm
+            </Text>
+          )}
         </TouchableOpacity>
+
+        {/* <TouchableOpacity
+          className="w-[202px] self-center mt-10 bg-white rounded-[10px] py-5 px-8 mb-4"
+          onPress={handleConfirm}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size={24} color="#000000" />
+          ) : (
+            <Text className="text-[#000000] text-center font-normal text-lg">
+              Confirm
+            </Text>
+          )}
+        </TouchableOpacity> */}
 
         {error !== "" && <Text style={styles.errorText}>{error}</Text>}
       </ScrollView>
@@ -391,4 +409,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-

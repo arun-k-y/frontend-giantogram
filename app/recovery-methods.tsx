@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useAuth } from "./components/auth-context";
 
 const baseUrl = "http://localhost:2001";
 
@@ -20,10 +21,11 @@ export default function RecoveryMethods() {
   const [newPhone, setNewPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const {accessToken} = useAuth()
 
   useEffect(() => {
     (async () => {
-      const token = await AsyncStorage.getItem("userToken");
+      const token = accessToken
       const res = await fetch(`${baseUrl}/api/auth/recovery`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -37,7 +39,7 @@ export default function RecoveryMethods() {
   }, []);
 
   const handleAdd = async (type: "email" | "phone") => {
-    const token = await AsyncStorage.getItem("userToken");
+    const token = accessToken
     setLoading(true);
 
     const payload =

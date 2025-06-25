@@ -17,6 +17,7 @@ import {
 } from "react-native";
 
 import Toast from "react-native-toast-message";
+import { useAuth } from "./components/auth-context";
 
 const Home = () => {
   const router = useRouter();
@@ -34,7 +35,7 @@ const Home = () => {
   const [userEmail, setUserEmail] = useState<string>("");
   const [username, setUserName] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
+  const {accessToken, email, mobile} = useAuth()
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
 
@@ -86,9 +87,11 @@ const Home = () => {
 
   const fetchUserData = async () => {
     try {
-      const token = await AsyncStorage.getItem("userToken");
-      const email = await AsyncStorage.getItem("userEmail");
+      // const token = await AsyncStorage.getItem("userToken");
+      // const email = await AsyncStorage.getItem("userEmail");
 
+      const token = accessToken
+      
       if (!token) {
         showToast("error", "No token found, please login.");
         router.replace("/login");
@@ -160,11 +163,19 @@ const Home = () => {
 
   const postToApi = async (endpoint: string, successMessage: string) => {
     try {
-      const [token, email, mobile] = await Promise.all([
-        AsyncStorage.getItem("userToken"),
-        AsyncStorage.getItem("userEmail"),
-        AsyncStorage.getItem("userMobile"),
-      ]);
+      // const [token, email, mobile] = await Promise.all([
+      //   AsyncStorage.getItem("userToken"),
+      //   AsyncStorage.getItem("userEmail"),
+      //   AsyncStorage.getItem("userMobile"),
+      // ]);
+
+      const token = accessToken;
+
+      // const [token, email, mobile] = await Promise.all([
+      //   AsyncStorage.getItem("userToken"),
+      //   AsyncStorage.getItem("userEmail"),
+      //   AsyncStorage.getItem("userMobile"),
+      // ]);
 
       const identifier = email || mobile;
 

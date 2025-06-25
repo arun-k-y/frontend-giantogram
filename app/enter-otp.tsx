@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
+import { useAuth } from "./components/auth-context";
 
 export default function EnterOtp() {
   const [otp, setOtp] = useState("");
@@ -22,6 +23,7 @@ export default function EnterOtp() {
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(59);
+  const { accessToken } = useAuth();
 
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -115,7 +117,6 @@ export default function EnterOtp() {
       } else {
         // Handle specific error codes
         switch (result.code) {
-          
           default:
             setErrorMessage(
               result.message || "Invalid code. Please try again."
@@ -144,7 +145,9 @@ export default function EnterOtp() {
     setErrorMessage("");
 
     try {
-      const token = await AsyncStorage.getItem("userToken");
+      // const token = await AsyncStorage.getItem("userToken");
+
+      const token = accessToken;
 
       const response = await fetch(`${baseUrl}/api/auth/resend-2fa`, {
         method: "POST",
@@ -237,8 +240,7 @@ export default function EnterOtp() {
         {/* OTP Input */}
         <View className="w-full mb-8">
           <TextInput
-                  style={{ fontSize: 18 }}
-
+            style={{ fontSize: 18 }}
             className="w-full text-[#1F1E1E] bg-white border border-[#B2EBF2] rounded-[10px] py-5 px-5 text-start"
             placeholder="Enter OTP"
             value={otp}

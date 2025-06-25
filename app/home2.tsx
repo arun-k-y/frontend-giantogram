@@ -556,6 +556,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { useAuth } from "./components/auth-context";
 
 export default function HomePage() {
   const [profileImage, setProfileImage] = useState(null);
@@ -567,6 +568,7 @@ export default function HomePage() {
 
   const router = useRouter();
   const baseUrl = "http://localhost:2001";
+  const { accessToken } = useAuth();
 
   useEffect(() => {
     fetchUserData();
@@ -593,7 +595,7 @@ export default function HomePage() {
 
   const fetchUserData = async () => {
     try {
-      const token = await AsyncStorage.getItem("userToken");
+      const token = accessToken;
       if (!token) return;
 
       const res = await fetch(`${baseUrl}/api/auth/protected`, {

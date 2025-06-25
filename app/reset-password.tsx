@@ -254,7 +254,7 @@ export default function ResetPassword() {
             <ActivityIndicator size={24} color="#000000" />
           ) : (
             <Text className="text-[#000000] text-center font-normal text-lg">
-              Reset Password
+              Confirm
             </Text>
           )}
         </TouchableOpacity>

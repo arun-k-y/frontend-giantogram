@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import BackButton from "./components/BackButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "./components/auth-context";
 
 export default function SetPassword() {
   const { identifier } = useLocalSearchParams();
@@ -25,6 +26,7 @@ export default function SetPassword() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const {accessToken,} = useAuth()
 
   // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
@@ -81,7 +83,7 @@ export default function SetPassword() {
     setIsLoading(true);
     try {
       console.log("Attempting to reset password for:", { identifier });
-      const token = await AsyncStorage.getItem("userToken");
+      const token = accessToken
 
       const response = await fetch(`${baseUrl}/api/auth/set-password`, {
         method: "POST",
@@ -105,7 +107,14 @@ export default function SetPassword() {
         // });
 
         // Navigate back to login
-        router.replace("/profile-pic");
+        // router.replace("/profile-pic");
+
+        if (Platform.OS === "android" || Platform.OS === "ios") {
+          router.replace("/profile-pic");
+          // router.replace("/choose-recovery");
+        } else {
+          router.replace("/home2");
+        }
       } else {
         setErrorMessage(data.message || "Failed to set password");
       }

@@ -20,6 +20,7 @@ import { useRouter } from "expo-router";
 import CustomCamera from "./components/CustomCamera";
 import BackButton from "./components/BackButton";
 import * as FileSystem from "expo-file-system";
+import { useAuth } from "./components/auth-context";
 
 // Constants
 const DEFAULT_AVATAR =
@@ -58,6 +59,7 @@ export default function ProfilePicUploader({
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [preview, setPreview] = useState(initialUrl);
   const [currentScreen, setCurrentScreen] = useState<Screen>(SCREENS.WELCOME);
+  const { accessToken } = useAuth();
   const [uploadState, setUploadState] = useState<UploadState>({
     isUploading: false,
     error: null,
@@ -377,7 +379,7 @@ export default function ProfilePicUploader({
         setUploadError(null);
         clearUploadTimeout();
 
-        const token = await AsyncStorage.getItem("userToken");
+        const token = accessToken;
         if (!token)
           throw new Error("Authentication required. Please log in again.");
         console.log("✅ Retrieved token:", token);
@@ -788,16 +790,16 @@ export default function ProfilePicUploader({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       {renderCurrentScreen()}
 
       {/* Navigation indicator - only show on certain screens */}
-      {(currentScreen === SCREENS.WELCOME ||
+      {/* {(currentScreen === SCREENS.WELCOME ||
         currentScreen === SCREENS.CONFIRMATION) && (
         <View style={styles.indicatorContainer}>
           <View style={styles.indicator} />
         </View>
-      )}
+      )} */}
     </SafeAreaView>
   );
 }
@@ -814,7 +816,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 32,
-    paddingBottom: 100, // Extra space for indicator
+    // paddingBottom: 100, // Extra space for indicator
   },
   welcomeContent: {
     flex: 1,

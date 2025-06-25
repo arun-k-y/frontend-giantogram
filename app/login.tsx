@@ -375,7 +375,7 @@ export default function Login() {
     return mobileRegex.test(mobile);
   };
 
-   const validateUsername = (username: string) => {
+  const validateUsername = (username: string) => {
     // Username validation: 3-30 characters, alphanumeric and underscores only
     // Adjust this regex based on your username requirements
     const usernameRegex = /^[a-zA-Z0-9_]{3,25}$/;

@@ -15,8 +15,11 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
+import { useAuth } from "./components/auth-context";
 
 export default function Verify2FA() {
+  const { accessToken, email, mobile, isDeactivated } = useAuth();
+
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -75,34 +78,43 @@ export default function Verify2FA() {
 
       if (response.ok && result?.token) {
         // Store user data
-        await AsyncStorage.setItem("userToken", result.token);
-        await AsyncStorage.setItem(
-          "isDeactivated",
-          JSON.stringify(result?.user?.isDeactivated || false)
-        );
+        // await AsyncStorage.setItem("userToken", result.token);
+        // await AsyncStorage.setItem(
+        //   "isDeactivated",
+        //   JSON.stringify(result?.user?.isDeactivated || false)
+        // );
 
-        // Store email if available
-        if (result.user?.email) {
-          await AsyncStorage.setItem("userEmail", result.user.email);
-        }
+        // // Store email if available
+        // if (result.user?.email) {
+        //   await AsyncStorage.setItem("userEmail", result.user.email);
+        // }
 
-        // Store mobile if available
-        if (result.user?.mobile) {
-          await AsyncStorage.setItem("userMobile", result.user.mobile);
-        }
+        // // Store mobile if available
+        // if (result.user?.mobile) {
+        //   await AsyncStorage.setItem("userMobile", result.user.mobile);
+        // }
 
         Toast.show({
           type: "success",
           text1: "Login successful!",
         });
 
-       
-        if (Platform.OS === "android" || Platform.OS === "ios") {
-          router.replace("/profile-pic");
-          // router.replace("/choose-recovery");
-        } else {
-          router.replace("/home2");
-        }
+        // if (Platform.OS === "android" || Platform.OS === "ios") {
+        //   router.replace("/profile-pic");
+        //   // router.replace("/choose-recovery");
+        // } else {
+        //   router.replace("/home2");
+        // }
+
+        router.replace({
+          pathname: "/remember-me",
+          params: {
+            token: result.token,
+            email: result.user?.email || "",
+            mobile: result.user?.mobile || "",
+            isDeactivated: JSON.stringify(result.user?.isDeactivated || false),
+          },
+        });
 
         // }
       } else {
@@ -241,8 +253,7 @@ export default function Verify2FA() {
         {/* OTP Input */}
         <View className="w-full mb-8">
           <TextInput
-                  style={{ fontSize: 18 }}
-
+            style={{ fontSize: 18 }}
             className="w-full text-[#1F1E1E] bg-white border border-[#B2EBF2] rounded-[10px] py-5 px-5 text-start"
             placeholder="Enter OTP"
             value={otp}
