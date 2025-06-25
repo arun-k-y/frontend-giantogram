@@ -13,12 +13,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function ResetPassword() {
-  const { identifier, username } = useLocalSearchParams();
-  const [resetCode, setResetCode] = useState("");
+export default function SetPassword() {
+  const { identifier } = useLocalSearchParams();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +28,6 @@ export default function ResetPassword() {
 
   // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
-    resetCode: false,
     newPassword: false,
     confirmPassword: false,
   });
@@ -40,22 +38,12 @@ export default function ResetPassword() {
 
   const validateInputs = () => {
     const errors = {
-      resetCode: !resetCode.trim() || resetCode.length !== 6,
       newPassword: !newPassword.trim() || newPassword.length < 6,
       confirmPassword:
         !confirmPassword.trim() || newPassword !== confirmPassword,
     };
 
     setFieldErrors(errors);
-
-    if (errors.resetCode) {
-      if (!resetCode.trim()) {
-        setErrorMessage("Reset code is required");
-      } else {
-        setErrorMessage("Reset code must be 6 digits");
-      }
-      return false;
-    }
 
     if (errors.newPassword) {
       if (!newPassword.trim()) {
@@ -83,7 +71,7 @@ export default function ResetPassword() {
     setErrorMessage("");
   };
 
-  const handleResetPassword = async () => {
+  const handleSetPassword = async () => {
     Keyboard.dismiss();
 
     setErrorMessage("");
@@ -93,16 +81,16 @@ export default function ResetPassword() {
     setIsLoading(true);
     try {
       console.log("Attempting to reset password for:", { identifier });
+      const token = await AsyncStorage.getItem("userToken");
 
-      const response = await fetch(`${baseUrl}/api/auth/reset-password`, {
+      const response = await fetch(`${baseUrl}/api/auth/set-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          identifier,
-          resetCode,
-          newPassword,
+          password: newPassword,
         }),
       });
 
@@ -111,15 +99,15 @@ export default function ResetPassword() {
       console.log("Response data:", data);
 
       if (response.ok) {
-        Toast.show({
-          type: "success",
-          text1: data?.message || "Password reset successful",
-        });
+        // Toast.show({
+        //   type: "success",
+        //   text1: data?.message || "Password reset successful",
+        // });
 
         // Navigate back to login
-        router.replace("/login");
+        router.replace("/profile-pic");
       } else {
-        setErrorMessage(data.message || "Failed to reset password");
+        setErrorMessage(data.message || "Failed to set password");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -142,38 +130,16 @@ export default function ResetPassword() {
   const FormLayout = () => {
     return (
       <View className="flex-1 items-center pt-32 p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
-        <View className="mb-8 w-full">
+        {/* <View className="mb-8 w-full">
           <Text className="text-white text-5xl font-medium text-center mb-2">
             Set New Password
           </Text>
-        </View>
-
-        <TextInput
-                style={{ fontSize: 18 }}
-
-          className={`w-full rounded-[10px] py-5 px-5 mb-6 text-start ${
-            fieldErrors.resetCode
-              ? "bg-white border text-[#F11111] border-[#FF6B6B]"
-              : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
-          }`}
-          placeholder="Enter OTP"
-          value={resetCode}
-          onChangeText={(code) => {
-            // Only allow numbers and limit to 6 digits
-            const numericCode = code.replace(/[^0-9]/g, "").slice(0, 6);
-            setResetCode(numericCode);
-            clearFieldError("resetCode");
-          }}
-          keyboardType="numeric"
-          maxLength={6}
-          placeholderTextColor="#555"
-        />
+        </View> */}
 
         <View className="w-full mb-6 relative">
           <TextInput
-                  style={{ fontSize: 18 }}
-
-            className={`w-full  rounded-[10px] py-5 px-5 pr-14 ${
+            style={{ fontSize: 18 }}
+            className={`w-full rounded-[10px] py-5 px-5 pr-14 ${
               fieldErrors.newPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
@@ -208,9 +174,8 @@ export default function ResetPassword() {
 
         <View className="w-full mb-12 relative">
           <TextInput
-                  style={{ fontSize: 18 }}
-
-            className={`w-full   rounded-[10px] py-5 px-5 pr-14 ${
+            style={{ fontSize: 18 }}
+            className={`w-full  rounded-[10px] py-5 px-5 pr-14 ${
               fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
@@ -247,14 +212,14 @@ export default function ResetPassword() {
 
         <TouchableOpacity
           className="w-[202px] bg-white rounded-[10px] py-5 px-8 mb-4"
-          onPress={handleResetPassword}
+          onPress={handleSetPassword}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator size={24} color="#000000" />
           ) : (
             <Text className="text-[#000000] text-center font-normal text-lg">
-              Reset Password
+              Set Password
             </Text>
           )}
         </TouchableOpacity>

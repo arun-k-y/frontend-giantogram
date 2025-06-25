@@ -6,9 +6,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -29,6 +28,8 @@ if (Platform.OS !== "web") {
 
 export default function SignUp() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const [username, setUsername] = useState("");
   const [emailOrMobile, setEmailOrMobile] = useState("");
@@ -50,10 +51,11 @@ export default function SignUp() {
   const [fieldErrors, setFieldErrors] = useState({
     username: false,
     emailOrMobile: false,
-    password: false,
-    confirmPassword: false,
+    // password: false,
+    // confirmPassword: false,
     gender: false,
     dob: false,
+    name: false,
   });
 
   const baseUrl = "http://localhost:2001";
@@ -150,24 +152,31 @@ export default function SignUp() {
 
   const validateForm = () => {
     const inputType = detectInputType(emailOrMobile.trim());
+    const usernameRegex = /^[a-zA-Z0-9_]{3,25}$/;
 
     const errors = {
-      username: !username.trim(),
+      username: !username.trim() || !usernameRegex.test(username),
       emailOrMobile: !emailOrMobile.trim() || inputType === "unknown",
-      password: !password.trim() || password.length < 8,
-      confirmPassword: !confirmPassword.trim() || password !== confirmPassword,
+      // password: !password.trim() || password.length < 8,
+      // confirmPassword: !confirmPassword.trim() || password !== confirmPassword,
       gender: false, // Gender is optional
       dob:
         Platform.OS === "web"
           ? !dobText.trim() || !validateDateString(dobText)
           : !dob || !validateDateOfBirth(dob),
+      name: !name.trim(),
     };
 
     setFieldErrors(errors);
-
+    if (errors.name) {
+      setErrorMessage("Name is required");
+      return false;
+    }
     // Set specific error messages
     if (errors.username) {
-      setErrorMessage("Username is required");
+      setErrorMessage(
+        "Username must be between 3 and 25 characters and can only contain letters, numbers, and underscores"
+      );
       return false;
     }
     if (!emailOrMobile.trim()) {
@@ -178,18 +187,18 @@ export default function SignUp() {
       setErrorMessage("Please enter a valid email address or mobile number");
       return false;
     }
-    if (!password.trim()) {
-      setErrorMessage("Password is required");
-      return false;
-    }
-    if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      return false;
-    }
+    // if (!password.trim()) {
+    //   setErrorMessage("Password is required");
+    //   return false;
+    // }
+    // if (password.length < 8) {
+    //   setErrorMessage("Password must be at least 8 characters");
+    //   return false;
+    // }
+    // if (password !== confirmPassword) {
+    //   setErrorMessage("Passwords do not match");
+    //   return false;
+    // }
     if (Platform.OS === "web" && !dobText.trim()) {
       setErrorMessage("Date of birth is required");
       return false;
@@ -229,8 +238,9 @@ export default function SignUp() {
     try {
       const inputType = detectInputType(emailOrMobile.trim());
       const requestBody: any = {
+        name,
         username,
-        password,
+        // password,
         dob:
           Platform.OS === "web"
             ? new Date(dobText).toISOString().split("T")[0]
@@ -257,17 +267,17 @@ export default function SignUp() {
 
       const data = await response.json();
       if (response.ok) {
-        Toast.show({
-          type: "success",
-          text1: "Sign up successful!",
-          text2: data.message,
-        });
+        // Toast.show({
+        //   type: "success",
+        //   text1: "Sign up successful!",
+        //   text2: data.message,
+        // });
 
         const identifier =
           inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
 
         router.push({
-          pathname: "/verify-email",
+          pathname: "/enter-otp" as any,
           params: {
             deliveryMethod: data.deliveryMethod,
             maskedDestination: data.maskedDestination,
@@ -290,9 +300,9 @@ export default function SignUp() {
           case "INVALID_MOBILE":
             setFieldErrors((prev) => ({ ...prev, emailOrMobile: true }));
             break;
-          case "WEAK_PASSWORD":
-            setFieldErrors((prev) => ({ ...prev, password: true }));
-            break;
+          // case "WEAK_PASSWORD":
+          //   setFieldErrors((prev) => ({ ...prev, password: true }));
+          //   break;
           case "INVALID_AGE":
             setFieldErrors((prev) => ({ ...prev, dob: true }));
             break;
@@ -315,25 +325,25 @@ export default function SignUp() {
   };
 
   const getInputStyle = (hasError: boolean) => {
-    return `w-full   text-lg rounded-[10px] py-5 px-5 ${
+    return `w-full rounded-[10px] py-5 px-5 ${
       hasError
-        ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+        ? "bg-white border text-[#F11111] border-[#FF6B6B]"
         : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
     }`;
   };
 
   const getPasswordInputStyle = (hasError: boolean) => {
-    return `w-full h-[61px] text-lg rounded-[10px] py-5 px-5 pr-14 ${
+    return `w-full rounded-[10px] py-5 px-5 pr-14 ${
       hasError
-        ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+        ? "bg-white border text-[#F11111] border-[#FF6B6B]"
         : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
     }`;
   };
 
   const getDatePickerStyle = (hasError: boolean) => {
-    return `w-full h-[61px] rounded-[10px] py-5 px-5 flex-row items-center justify-between ${
+    return `w-full  rounded-[10px] py-5 px-5 flex-row items-center justify-between ${
       hasError
-        ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+        ? "bg-white border text-[#F11111] border-[#FF6B6B]"
         : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
     }`;
   };
@@ -356,15 +366,19 @@ export default function SignUp() {
   const FormLayout = () => (
     <View className="flex-1 justify-center items-center p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
       <TextInput
-        className={getInputStyle(fieldErrors.username) + " mb-4"}
-        placeholder="Username"
-        value={username}
+        className={
+          getInputStyle(fieldErrors.name) +
+          " mb-4 focus:border-[#f2bab2] focus:border-6"
+        }
+        placeholder="Name"
+        value={name}
         onChangeText={(val) => {
-          setUsername(val);
-          clearFieldError("username");
+          setName(val);
+          clearFieldError("name");
         }}
         autoCapitalize="none"
         placeholderTextColor="#555"
+        style={{ fontSize: 18 }}
       />
 
       <View className="w-full mb-4 relative">
@@ -374,9 +388,9 @@ export default function SignUp() {
               onPress={() =>
                 setShowCountryCodeDropdown(!showCountryCodeDropdown)
               }
-              className={`h-[61px] px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
+              className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
                 fieldErrors.emailOrMobile
-                  ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+                  ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                   : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
               }`}
             >
@@ -390,9 +404,9 @@ export default function SignUp() {
           )}
 
           <TextInput
-            className={`flex-1 text-[#170202] h-[61px] text-lg py-5 px-5 ${
+            className={`flex-1 text-[#170202]  py-5 px-5 ${
               fieldErrors.emailOrMobile
-                ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+                ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             } ${
               isMobileInput ? "rounded-r-[10px] border-l-0" : "rounded-[10px]"
@@ -406,6 +420,7 @@ export default function SignUp() {
             keyboardType="default"
             autoCapitalize="none"
             placeholderTextColor="#555"
+            style={{ fontSize: 18 }}
           />
         </View>
 
@@ -424,7 +439,7 @@ export default function SignUp() {
         )}
       </View>
 
-      <View className="w-full mb-4 relative">
+      {/* <View className="w-full mb-4 relative">
         <TextInput
           className={getPasswordInputStyle(fieldErrors.password)}
           placeholder="Create Password"
@@ -439,16 +454,18 @@ export default function SignUp() {
           secureTextEntry={!isPasswordVisible}
           placeholderTextColor="#555"
         />
-        <TouchableOpacity
-          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute right-5 top-1/2 -translate-y-[50%]"
-        >
-          {isPasswordVisible ? (
-            <EyeSVG width={24} height={24} />
-          ) : (
-            <ClosedEyeSVG width={24} height={24} />
-          )}
-        </TouchableOpacity>
+        {password && (
+          <TouchableOpacity
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            className="absolute right-5 top-1/2 -translate-y-[50%]"
+          >
+            {isPasswordVisible ? (
+              <EyeSVG width={24} height={24} />
+            ) : (
+              <ClosedEyeSVG width={24} height={24} />
+            )}
+          </TouchableOpacity>
+        )}
       </View>
 
       <View className="w-full mb-4 relative">
@@ -466,17 +483,33 @@ export default function SignUp() {
           secureTextEntry={!isConfirmPasswordVisible}
           placeholderTextColor="#555"
         />
-        <TouchableOpacity
-          onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-          className="absolute right-5 top-1/2 -translate-y-[50%]"
-        >
-          {isConfirmPasswordVisible ? (
-            <EyeSVG width={24} height={24} />
-          ) : (
-            <ClosedEyeSVG width={24} height={24} />
-          )}
-        </TouchableOpacity>
-      </View>
+        {confirmPassword && (
+          <TouchableOpacity
+            onPress={() =>
+              setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+            }
+            className="absolute right-5 top-1/2 -translate-y-[50%]"
+          >
+            {isConfirmPasswordVisible ? (
+              <EyeSVG width={24} height={24} />
+            ) : (
+              <ClosedEyeSVG width={24} height={24} />
+            )}
+          </TouchableOpacity>
+        )}
+      </View> */}
+      <TextInput
+        className={getInputStyle(fieldErrors.username) + " mb-4"}
+        placeholder="Username"
+        value={username}
+        onChangeText={(val) => {
+          setUsername(val);
+          clearFieldError("username");
+        }}
+        autoCapitalize="none"
+        placeholderTextColor="#555"
+        style={{ fontSize: 18 }}
+      />
 
       <View className="w-full mb-4">
         <Dropdown
@@ -500,11 +533,11 @@ export default function SignUp() {
           }}
           placeholderStyle={{
             color: "#555",
-            fontSize: 16,
+            fontSize: 18,
           }}
           selectedTextStyle={{
             color: "#170202",
-            fontSize: 16,
+            fontSize: 18,
           }}
           itemTextStyle={{
             color: "#170202",
@@ -525,6 +558,7 @@ export default function SignUp() {
         {Platform.OS === "web" ? (
           // Web: Use HTML date input with fallback to text input
           <TextInput
+            style={{ fontSize: 18 }}
             className={getInputStyle(fieldErrors.dob)}
             placeholder="Date of Birth (YYYY-MM-DD)"
             value={dobText}
@@ -551,6 +585,7 @@ export default function SignUp() {
               onPress={() => setShowDatePicker(true)}
             >
               <Text
+                style={{ fontSize: 18 }}
                 className={`text-lg ${dob ? "text-[#170202]" : "text-[#555]"}`}
               >
                 {dob ? formatDateForDisplay(dob) : "Date of Birth"}
@@ -616,8 +651,8 @@ export default function SignUp() {
 
       {errorMessage !== "" && (
         <View className="py-5 w-full mt-6 absolute bottom-0">
-          <Text className="text-[#E12D39] text-2xl px-2 text-center font-normal">
-            {errorMessage}
+          <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
+            {`[ ${errorMessage} ]`}
           </Text>
         </View>
       )}
@@ -677,3 +712,276 @@ export default function SignUp() {
     </>
   );
 }
+
+// import React, { useState } from 'react';
+// import { View, Text, TextInput, TouchableOpacity, Alert, Vibration, ScrollView } from 'react-native';
+
+// export default function Signup({ navigation }) {
+//   const [formData, setFormData] = useState({
+//     name: '', contact: '', username: '', gender: '', birthDate: { day: '', month: '', year: '' }, agreeToTerms: false
+//   });
+//   const [errors, setErrors] = useState({});
+//   const [showCountryPicker, setShowCountryPicker] = useState(false);
+//   const [countryCode, setCountryCode] = useState('+91');
+//   const [showGenderPicker, setShowGenderPicker] = useState(false);
+
+//   const validateForm = () => {
+//     const newErrors = {};
+//     if (!formData.contact.trim()) {
+//       newErrors.contact = 'Enter Number or Gmail';
+//     } else {
+//       const contactValidation = validateContact(formData.contact);
+//       if (!contactValidation.isValid) newErrors.contact = contactValidation.error;
+//     }
+//     if (!formData.username.trim()) {
+//       newErrors.username = 'Create Username';
+//     } else if (formData.username.includes(' ')) {
+//       newErrors.username = 'Username cannot contain spaces';
+//     } else if (formData.username.length > 25) {
+//       newErrors.username = 'Username too long';
+//     }
+//     const { day, month, year } = formData.birthDate;
+//     if (day && month && year) {
+//       const age = calculateAge(day, month, year);
+//       if (age < 13) newErrors.age = 'At least User have to be 13 years old';
+//       else if (age > 150) newErrors.age = 'Maximum age cannot exceed 150 years';
+//     }
+//     return newErrors;
+//   };
+//   const validateContact = (contact) => {
+//     if (contact.includes('@')) {
+//       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//       return { isValid: emailRegex.test(contact), error: 'Enter Valid Gmail' };
+//     } else {
+//       const phoneRegex = /^\+?[\d\s-()]+$/;
+//       const cleanPhone = contact.replace(/\D/g, '');
+//       return { isValid: phoneRegex.test(contact) && cleanPhone.length >= 10, error: 'Enter Valid Number' };
+//     }
+//   };
+//   const calculateAge = (day, month, year) => {
+//     const birthDate = new Date(year, month - 1, day);
+//     const today = new Date();
+//     let age = today.getFullYear() - birthDate.getFullYear();
+//     const monthDiff = today.getMonth() - birthDate.getMonth();
+//     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+//       age--;
+//     }
+//     return age;
+//   };
+//   const showError = (message) => {
+//     Alert.alert('Error', message);
+//     Vibration.vibrate(100);
+//   };
+//   const handleSubmit = async () => {
+//     const validationErrors = validateForm();
+//     if (Object.keys(validationErrors).length > 0) {
+//       setErrors(validationErrors);
+//       if (validationErrors.contact) showError(validationErrors.contact);
+//       else if (validationErrors.username) showError(validationErrors.username);
+//       else if (validationErrors.age) showError(validationErrors.age);
+//       return;
+//     }
+//     try {
+//       const response = await fetch('/api/auth/check-username', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ username: formData.username })
+//       });
+//       const result = await response.json();
+//       if (!result.available) {
+//         setErrors({ username: 'Username Already In Use' });
+//         showError('Username Already In Use');
+//         return;
+//       }
+//       navigation.navigate('OTPVerification', {
+//         formData,
+//         contactType: validateContact(formData.contact).type
+//       });
+//     } catch {
+//       showError('Network error. Please try again.');
+//     }
+//   };
+
+//   return (
+//     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
+//       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//         <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 8 }}>
+//           <Text style={{ fontSize: 18 }}>←</Text>
+//         </TouchableOpacity>
+//         <Text style={{ fontSize: 18, fontWeight: 'bold', flex: 1, textAlign: 'center' }}>GIANTOGRAM</Text>
+//       </View>
+
+//       <Text style={{ fontSize: 20, fontWeight: '600', textAlign: 'center', marginVertical: 16 }}>Creating New Account</Text>
+
+//       <TextInput
+//         style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', marginBottom: 12 }}
+//         placeholder="Name"
+//         value={formData.name}
+//         onChangeText={(text) => setFormData({ ...formData, name: text.slice(0, 25) })}
+//         maxLength={25}
+//       />
+
+//       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+//         {formData.contact.match(/^\d/) && (
+//           <TouchableOpacity
+//             style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', justifyContent: 'center' }}
+//             onPress={() => setShowCountryPicker(true)}
+//           >
+//             <Text>{countryCode}</Text>
+//           </TouchableOpacity>
+//         )}
+//         <TextInput
+//           style={{
+//             flex: 1,
+//             padding: 12,
+//             borderRadius: 8,
+//             borderWidth: 1,
+//             borderColor: errors.contact ? 'red' : '#ccc',
+//             marginLeft: 8
+//           }}
+//           placeholder="Number or Gmail"
+//           value={formData.contact}
+//           onChangeText={(text) => {
+//             setFormData({ ...formData, contact: text });
+//             if (errors.contact) setErrors({ ...errors, contact: null });
+//           }}
+//         />
+//       </View>
+
+//       <TextInput
+//         style={{
+//           padding: 12,
+//           borderRadius: 8,
+//           borderWidth: 1,
+//           borderColor: errors.username ? 'red' : '#ccc',
+//           marginBottom: 12
+//         }}
+//         placeholder="Username"
+//         value={formData.username}
+//         onChangeText={(text) => {
+//           const cleanText = text.replace(/\s/g, '').slice(0, 25);
+//           setFormData({ ...formData, username: cleanText });
+//           if (errors.username) setErrors({ ...errors, username: null });
+//         }}
+//         maxLength={25}
+//       />
+
+//       <TouchableOpacity
+//         style={{
+//           padding: 12,
+//           borderRadius: 8,
+//           borderWidth: 1,
+//           borderColor: '#ccc',
+//           justifyContent: 'center',
+//           marginBottom: 12
+//         }}
+//         onPress={() => setShowGenderPicker(true)}
+//       >
+//         <Text style={{ color: formData.gender ? '#000' : '#888' }}>{formData.gender || 'Gender'}</Text>
+//       </TouchableOpacity>
+
+//       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+//         <TextInput
+//           style={{
+//             flex: 1,
+//             padding: 12,
+//             borderRadius: 8,
+//             borderWidth: 1,
+//             borderColor: errors.age ? 'red' : '#ccc',
+//             textAlign: 'center',
+//             marginRight: 4
+//           }}
+//           placeholder="DD"
+//           value={formData.birthDate.day}
+//           onChangeText={(text) => {
+//             if (text.length <= 2 && /^\d*$/.test(text)) {
+//               setFormData({ ...formData, birthDate: { ...formData.birthDate, day: text } });
+//             }
+//           }}
+//           keyboardType="numeric"
+//           maxLength={2}
+//         />
+//         <Text style={{ alignSelf: 'center' }}>/</Text>
+//         <TextInput
+//           style={{
+//             flex: 1,
+//             padding: 12,
+//             borderRadius: 8,
+//             borderWidth: 1,
+//             borderColor: errors.age ? 'red' : '#ccc',
+//             textAlign: 'center',
+//             marginHorizontal: 4
+//           }}
+//           placeholder="MM"
+//           value={formData.birthDate.month}
+//           onChangeText={(text) => {
+//             if (text.length <= 2 && /^\d*$/.test(text)) {
+//               setFormData({ ...formData, birthDate: { ...formData.birthDate, month: text } });
+//             }
+//           }}
+//           keyboardType="numeric"
+//           maxLength={2}
+//         />
+//         <Text style={{ alignSelf: 'center' }}>/</Text>
+//         <TextInput
+//           style={{
+//             flex: 1,
+//             padding: 12,
+//             borderRadius: 8,
+//             borderWidth: 1,
+//             borderColor: errors.age ? 'red' : '#ccc',
+//             textAlign: 'center',
+//             marginLeft: 4
+//           }}
+//           placeholder="YYYY"
+//           value={formData.birthDate.year}
+//           onChangeText={(text) => {
+//             if (text.length <= 4 && /^\d*$/.test(text)) {
+//               setFormData({ ...formData, birthDate: { ...formData.birthDate, year: text } });
+//             }
+//           }}
+//           keyboardType="numeric"
+//           maxLength={4}
+//         />
+//       </View>
+
+//       <TouchableOpacity
+//         style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}
+//         onPress={() => setFormData({ ...formData, agreeToTerms: !formData.agreeToTerms })}
+//       >
+//         <View
+//           style={{
+//             width: 24,
+//             height: 24,
+//             borderRadius: 4,
+//             borderWidth: 1,
+//             borderColor: '#888',
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//             backgroundColor: formData.agreeToTerms ? '#007BFF' : 'transparent',
+//             marginRight: 8
+//           }}
+//         >
+//           {formData.agreeToTerms && <Text style={{ color: '#fff' }}>✓</Text>}
+//         </View>
+//         <Text style={{ flex: 1, fontSize: 14, color: '#555' }}>
+//           by creating new account you agree to our policy terms and conditions
+//         </Text>
+//       </TouchableOpacity>
+
+//       <TouchableOpacity
+//         style={{
+//           padding: 16,
+//           backgroundColor: '#007BFF',
+//           borderRadius: 8,
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           marginBottom: 24
+//         }}
+//         onPress={handleSubmit}
+//       >
+//         <Text style={{ fontSize: 16, color: '#fff' }}>Confirm</Text>
+//       </TouchableOpacity>
+//     </ScrollView>
+//   );
+// }

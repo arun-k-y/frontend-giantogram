@@ -16,7 +16,7 @@ import {
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
 
-export default function Verify2FA() {
+export default function EnterOtp() {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -91,41 +91,31 @@ export default function Verify2FA() {
           await AsyncStorage.setItem("userMobile", result.user.mobile);
         }
 
-        Toast.show({
-          type: "success",
-          text1: "Login successful!",
-        });
+        // Toast.show({
+        //   type: "success",
+        //   text1: "Login successful!",
+        // });
 
-       
-        if (Platform.OS === "android" || Platform.OS === "ios") {
-          router.replace("/profile-pic");
-          // router.replace("/choose-recovery");
-        } else {
-          router.replace("/home2");
-        }
+        // if (result?.profilePicture === true) {
+        // Navigate to profile picture upload if required
+
+        //   router.replace("/home");
+        // } else {
+        // if (Platform.OS === "android" || Platform.OS === "ios") {
+        //   router.replace("/profile-pic");
+        // } else {
+        //   router.replace("/home2");
+        // }
+
+        router.replace({
+          pathname: "/set-password",
+        });
 
         // }
       } else {
         // Handle specific error codes
         switch (result.code) {
-          case "MISSING_FIELDS":
-            setErrorMessage("Please enter the verification code");
-            break;
-          case "INVALID_CODE":
-          case 400: // Handle numeric code as well
-            setErrorMessage("Invalid verification code. Please try again.");
-            break;
-          case "CODE_EXPIRED":
-            setErrorMessage(
-              "Verification code has expired. Please request a new one."
-            );
-            break;
-          case "USER_NOT_FOUND":
-            setErrorMessage("Session expired. Please login again.");
-            break;
-          case "MAX_ATTEMPTS_EXCEEDED":
-            setErrorMessage("Too many incorrect attempts. Please login again.");
-            break;
+          
           default:
             setErrorMessage(
               result.message || "Invalid code. Please try again."
@@ -154,9 +144,15 @@ export default function Verify2FA() {
     setErrorMessage("");
 
     try {
+      const token = await AsyncStorage.getItem("userToken");
+
       const response = await fetch(`${baseUrl}/api/auth/resend-2fa`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
         body: JSON.stringify({
           identifier,
           preferredMethod: deliveryMethod,

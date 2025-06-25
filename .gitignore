@@ -9,3 +9,44 @@ expo-env.d.ts
 /android
 /ios
 /dist
+.expo/
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Specific files you want to ignore
+_sitemap.html
++not-found.html
+forgot-password.html
+home.html
+index.html
+login.html
+reset-password.html
+signup.html
+verify-email.html
+
+# Generated files
+web-*.js
+entry-*.js
+.DS_Store
+.DS_Store?
+._*

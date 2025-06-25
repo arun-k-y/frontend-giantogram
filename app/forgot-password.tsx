@@ -26,8 +26,7 @@ export default function ForgotPassword() {
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
 
   const baseUrl = "http://localhost:2001";
-    // const baseUrl = 'http://localhost:2001'
-
+  // const baseUrl = 'http://localhost:2001'
 
   // Updated validation functions to handle both email and phone
   const validateEmail = (email: string) => {
@@ -36,10 +35,17 @@ export default function ForgotPassword() {
   };
 
   const validateMobile = (mobile: string) => /^\d{10}$/.test(mobile);
+  const validateUsername = (username: string) => {
+    // Username validation: 3-30 characters, alphanumeric and underscores only
+    // Adjust this regex based on your username requirements
+    const usernameRegex = /^[a-zA-Z0-9_]{3,25}$/;
+    return usernameRegex.test(username);
+  };
 
   const getIdentifierType = (value: string) => {
     if (validateEmail(value)) return "email";
     if (validateMobile(value)) return "mobile";
+    if (validateUsername(value)) return "username";
     return null;
   };
 
@@ -57,9 +63,8 @@ export default function ForgotPassword() {
     const identifierType = getIdentifierType(identifier.trim());
 
     if (!identifierType) {
-      setErrorMessage(
-        "Please enter a valid email address or 10-digit phone number"
-      );
+      setErrorMessage("Email, phone number, or username is required");
+
       setFieldError(true);
       return;
     }
@@ -71,11 +76,13 @@ export default function ForgotPassword() {
         type: identifierType,
       });
 
+      let id = identifier.trim();
+      if (identifierType === "mobile") {
+        id = `${selectedCountryCode}${identifier.trim()}`;
+      }
+
       // Prepare the request body based on identifier type
-      const requestBody =
-        identifierType === "email"
-          ? { identifier: identifier.trim() }
-          : { identifier: selectedCountryCode + identifier.trim() };
+      const requestBody = { identifier: id };
 
       const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
         method: "POST",
@@ -95,13 +102,23 @@ export default function ForgotPassword() {
           text1: data?.message || "Reset code sent successfully",
         });
 
-        router.push({
+        if(data.redirect === true) {
+          // Navigate to the reset password page with identifier and type     
+          router.push({
+          pathname: "/choose-recovery",
+          params: {
+            identifier: data.identifier,
+          }})
+        } else{
+          router.push({
           pathname: "/reset-password",
           params: {
             identifier: identifier.trim(),
             identifierType,
           },
         });
+        }
+        
       } else {
         setErrorMessage(data.message || "Failed to send reset code");
       }
@@ -147,6 +164,7 @@ export default function ForgotPassword() {
           setSelectedCountryCode={setSelectedCountryCode}
           showDropdown={showCountryCodeDropdown}
           setShowDropdown={setShowCountryCodeDropdown}
+          placeholder="NUMBER, USERNAME OR EMAIL"
         />
 
         <TouchableOpacity
@@ -158,7 +176,7 @@ export default function ForgotPassword() {
             <ActivityIndicator size={24} color="#000000" />
           ) : (
             <Text className="text-[#000000] text-center font-normal text-lg">
-              Send Reset Code
+              Confirm
             </Text>
           )}
         </TouchableOpacity>
@@ -176,7 +194,7 @@ export default function ForgotPassword() {
         {errorMessage !== "" && (
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
-              <Text className="text-[#E12D39] text-2xl px-2 text-center font-normal">
+              <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
                 {errorMessage}
               </Text>
             </View>

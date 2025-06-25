@@ -46,15 +46,15 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
       {isMobileInput && (
         <TouchableOpacity
           onPress={() => setShowDropdown(!showDropdown)}
-          //   className={`h-[61px] px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
+          //   className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
           //     fieldError
           //       ? "bg-white border border-[#FF6B6B]"
           //       : "bg-white border border-[#B2EBF2]"
           //   }`}
 
-          className={`h-[61px] px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
+          className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
             fieldError
-              ? "bg-white border text-[#E12D39] border-[#FF6B6B]"
+              ? "bg-white border text-[#F11111] border-[#FF6B6B]"
               : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
           }`}
         >
@@ -68,14 +68,14 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
       )}
 
       <TextInput
-        // className={`flex-1 text-[#1F1E1E] h-[61px] text-lg py-5 px-5 ${
+        // className={`flex-1 text-[#1F1E1E]  text-lg py-5 px-5 ${
         //   fieldError
         //     ? "bg-white border border-[#FF6B6B] border-l-0"
         //     : "bg-white border border-[#B2EBF2] border-l-0"
         // } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
-        className={`flex-1  h-[61px] text-lg py-5 px-5 ${
+        className={`flex-1 py-5 px-5 ${
           fieldError
-            ? "bg-white border text-[#E12D39] border-[#FF6B6B] border-l-0"
+            ? "bg-white border text-[#F11111] border-[#FF6B6B] border-l-0"
             : "bg-white border text-[#1F1E1E] border-[#B2EBF2] border-l-0"
         } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
         placeholder={placeholder}
@@ -84,6 +84,8 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
         keyboardType="default"
         autoCapitalize="none"
         placeholderTextColor="#555"
+                style={{ fontSize: 18 }}
+
       />
 
       {showDropdown && (

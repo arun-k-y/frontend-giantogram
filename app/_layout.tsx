@@ -14,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { toastConfig } from "./utils/ToastDesign";
 import "../global.css";
+import { AuthProvider } from "./components/auth-context";
 
 export default function RootLayout() {
   const [isChecking, setIsChecking] = useState(true);
@@ -88,6 +89,7 @@ export default function RootLayout() {
   }
 
   return (
+     <AuthProvider>
     <SafeAreaProvider>
       <SafeAreaView
         edges={["top", "left", "right", "bottom"]}
@@ -103,6 +105,10 @@ export default function RootLayout() {
               "reset-password",
               "verify-email",
               "profile-pic",
+              "enter-otp",
+              "set-password",
+              "recovery-methods",
+              "choose-recovery",
             ].map((name) => (
               <Stack.Screen
                 key={name}
@@ -143,7 +149,7 @@ export default function RootLayout() {
           />
         </View>
       </SafeAreaView>
-    </SafeAreaProvider>
+    </SafeAreaProvider></AuthProvider>
   );
 }
 
