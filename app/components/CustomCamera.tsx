@@ -1,571 +1,3 @@
-// // import React, { useState, useRef } from "react";
-// // import {
-// //   View,
-// //   Text,
-// //   TouchableOpacity,
-// //   StyleSheet,
-// //   Dimensions,
-// //   Alert,
-// // } from "react-native";
-// // import { CameraView, useCameraPermissions } from "expo-camera";
-// // import * as MediaLibrary from "expo-media-library";
-// // import { Ionicons } from "@expo/vector-icons";
-
-// // const { width, height } = Dimensions.get("window");
-
-// // interface CustomCameraProps {
-// //   onPhotoTaken?: (uri: string) => void;
-// //   onClose?: () => void;
-// // }
-
-// // type CameraTypeString = "front" | "back";
-// // type FlashModeString = "off" | "on";
-
-// // export default function CustomCamera({
-// //   onPhotoTaken,
-// //   onClose,
-// // }: CustomCameraProps) {
-// //   const [type, setType] = useState<CameraTypeString>("back");
-// //   const [flashMode, setFlashMode] = useState<FlashModeString>("off");
-// //   const [permission, requestPermission] = useCameraPermissions();
-// //   const cameraRef = useRef<CameraView>(null);
-
-// //   if (!permission) return <View />;
-
-// //   if (!permission.granted) {
-// //     return (
-// //       <View style={styles.container}>
-// //         <Text style={styles.message}>
-// //           We need your permission to show the camera
-// //         </Text>
-// //         <TouchableOpacity
-// //           onPress={requestPermission}
-// //           style={styles.permissionButton}
-// //         >
-// //           <Text style={styles.permissionButtonText}>Grant Permission</Text>
-// //         </TouchableOpacity>
-// //       </View>
-// //     );
-// //   }
-
-// //   const takePicture = async () => {
-// //     if (cameraRef.current) {
-// //       try {
-// //         const photo = await cameraRef.current.takePictureAsync({
-// //           quality: 0.8,
-// //           base64: false,
-// //         });
-
-// //         // Save to media library
-// //         await MediaLibrary.saveToLibraryAsync(photo.uri);
-
-// //         if (onPhotoTaken) {
-// //           onPhotoTaken(photo.uri);
-// //         }
-// //       } catch (error) {
-// //         Alert.alert("Error", "Failed to take picture");
-// //         console.error("Camera error:", error);
-// //       }
-// //     }
-// //   };
-
-// //   const toggleCameraType = () => setType(type === "back" ? "front" : "back");
-// //   const toggleFlash = () => setFlashMode(flashMode === "off" ? "on" : "off");
-
-// //   return (
-// //     <View style={styles.container}>
-// //       {/* Header */}
-// //       <View style={styles.header}>
-// //         <TouchableOpacity onPress={onClose} style={styles.backButton}>
-// //           <Ionicons name="arrow-back" size={24} color="white" />
-// //         </TouchableOpacity>
-// //         <Text style={styles.title}>GIANTOGRAM</Text>
-// //         <View style={styles.placeholder} />
-// //       </View>
-
-// //       {/* Camera View */}
-// //       <CameraView
-// //         style={styles.camera}
-// //         facing={type}
-// //         flash={flashMode}
-// //         ref={cameraRef}
-// //       >
-// //         {/* Camera Controls Overlay */}
-// //         <View style={styles.overlay}>
-// //           {/* Top Controls */}
-// //           <View style={styles.topControls}></View>
-
-// //           {/* Center - Camera Viewfinder */}
-// //           {/* <View style={styles.viewfinder}>
-// //             <View style={styles.viewfinderFrame} />
-// //           </View> */}
-
-// //           <View style={styles.viewfinder}>
-// //             <View style={styles.maskRow} />
-// //             <View style={styles.maskCenterRow}>
-// //               <View style={styles.maskSide} />
-// //               <View style={styles.viewfinderFrame} />
-// //               <View style={styles.maskSide} />
-// //             </View>
-// //             <View style={styles.maskRow} />
-// //           </View>
-
-// //           {/* Bottom Controls */}
-// //           <View style={styles.bottomControls}>
-// //             {/* Flash Toggle Button (replacing gallery) */}
-// //             <TouchableOpacity
-// //               onPress={toggleFlash}
-// //               style={styles.galleryButton}
-// //             >
-// //               <Ionicons
-// //                 name={flashMode === "off" ? "flash-off" : "flash"}
-// //                 size={24}
-// //                 color="white"
-// //               />
-// //             </TouchableOpacity>
-
-// //             {/* Capture Button */}
-// //             <TouchableOpacity
-// //               onPress={takePicture}
-// //               style={styles.captureButton}
-// //             >
-// //               <View style={styles.captureButtonInner} />
-// //             </TouchableOpacity>
-
-// //             {/* Flip Camera Button */}
-// //             <TouchableOpacity
-// //               onPress={toggleCameraType}
-// //               style={styles.flipButton}
-// //             >
-// //               <Ionicons name="camera-reverse-outline" size={24} color="white" />
-// //             </TouchableOpacity>
-// //           </View>
-// //         </View>
-// //       </CameraView>
-// //     </View>
-// //   );
-// // }
-
-// // const styles = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //     backgroundColor: "black",
-// //   },
-// //   message: {
-// //     textAlign: "center",
-// //     paddingBottom: 10,
-// //     color: "white",
-// //   },
-// //   permissionButton: {
-// //     backgroundColor: "white",
-// //     padding: 15,
-// //     borderRadius: 8,
-// //     margin: 20,
-// //   },
-// //   permissionButtonText: {
-// //     color: "black",
-// //     textAlign: "center",
-// //     fontWeight: "bold",
-// //   },
-// //   header: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-between",
-// //     alignItems: "center",
-// //     paddingHorizontal: 20,
-// //     paddingTop: 50,
-// //     paddingBottom: 20,
-// //     backgroundColor: "black",
-// //   },
-// //   backButton: {
-// //     padding: 8,
-// //   },
-// //   title: {
-// //     color: "white",
-// //     fontSize: 18,
-// //     fontWeight: "bold",
-// //   },
-// //   placeholder: {
-// //     width: 40,
-// //   },
-// //   camera: {
-// //     flex: 1,
-// //   },
-// //   overlay: {
-// //     flex: 1,
-// //     backgroundColor: "transparent",
-// //     flexDirection: "column",
-// //     justifyContent: "space-between",
-// //   },
-// //   topControls: {
-// //     flexDirection: "row",
-// //     justifyContent: "flex-end",
-// //     paddingHorizontal: 20,
-// //     paddingTop: 20,
-// //   },
-// //   controlButton: {
-// //     backgroundColor: "rgba(0, 0, 0, 0.5)",
-// //     borderRadius: 25,
-// //     padding: 12,
-// //     marginLeft: 10,
-// //   },
-// //   viewfinder: {
-// //     flex: 1,
-// //     justifyContent: "center",
-// //     alignItems: "center",
-// //   },
-// //   viewfinderFrame: {
-// //     width: width * 0.8,
-// //     height: width * 0.8,
-// //     borderRadius: (width * 0.8) / 2,
-// //     borderWidth: 2,
-// //     borderColor: "white",
-// //     backgroundColor: "transparent",
-// //   },
-// //   bottomControls: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-around",
-// //     alignItems: "center",
-// //     paddingBottom: 40,
-// //     paddingHorizontal: 40,
-// //   },
-// //   galleryButton: {
-// //     backgroundColor: "rgba(0, 0, 0, 0.6)",
-// //     borderRadius: 30,
-// //     padding: 15,
-// //   },
-// //   captureButton: {
-// //     width: 80,
-// //     height: 80,
-// //     borderRadius: 40,
-// //     backgroundColor: "white",
-// //     justifyContent: "center",
-// //     alignItems: "center",
-// //     borderWidth: 4,
-// //     borderColor: "rgba(255, 255, 255, 0.8)",
-// //   },
-// //   captureButtonInner: {
-// //     width: 60,
-// //     height: 60,
-// //     borderRadius: 30,
-// //     backgroundColor: "white",
-// //     borderWidth: 2,
-// //     borderColor: "#ddd",
-// //   },
-// //   flipButton: {
-// //     backgroundColor: "rgba(0, 0, 0, 0.6)",
-// //     borderRadius: 30,
-// //     padding: 15,
-// //   },
-// //   maskRow: {
-// //     width: "100%",
-// //     height: (height - width * 0.8) / 2,
-// //     backgroundColor: "rgba(0, 0, 0, 1)",
-// //   },
-
-// //   maskCenterRow: {
-// //     flexDirection: "row",
-// //   },
-
-// //   maskSide: {
-// //     flex: 1,
-// //     backgroundColor: "rgba(0, 0, 0, 1)",
-// //   },
-// // });
-
-// // Usage example in your ProfilePicUploader component:
-// /*
-// import CustomCamera from './CustomCamera';
-
-// // Add this to your SCREEN enum:
-// const SCREEN = {
-//   WELCOME: "welcome",
-//   CAMERA: "camera", // Now this will show the custom camera
-//   POPUP: "pop-up",
-//   PREVIEW: "preview",
-//   CONFIRMATION: "confirmation",
-// };
-
-// // Replace your CameraScreen with:
-// const CameraScreen = () => (
-//   <CustomCamera
-//     onPhotoTaken={(uri) => {
-//       setImage({ uri } as ImagePicker.ImagePickerAsset);
-//       setPreview(uri);
-//       setCurrentScreen(SCREEN.PREVIEW);
-//     }}
-//     onClose={() => setCurrentScreen(SCREEN.WELCOME)}
-//   />
-// );
-// */
-
-// import React, { useState, useRef } from "react";
-// import {
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   StyleSheet,
-//   Dimensions,
-//   Alert,
-// } from "react-native";
-// import { CameraView, useCameraPermissions } from "expo-camera";
-// import * as MediaLibrary from "expo-media-library";
-// import { Ionicons } from "@expo/vector-icons";
-
-// const { width, height } = Dimensions.get("window");
-
-// interface CustomCameraProps {
-//   onPhotoTaken?: (uri: string) => void;
-//   onClose?: () => void;
-// }
-
-// type CameraTypeString = "front" | "back";
-// type FlashModeString = "off" | "on";
-
-// export default function CustomCamera({
-//   onPhotoTaken,
-//   onClose,
-// }: CustomCameraProps) {
-//   const [type, setType] = useState<CameraTypeString>("back");
-//   const [flashMode, setFlashMode] = useState<FlashModeString>("off");
-//   const [permission, requestPermission] = useCameraPermissions();
-//   const cameraRef = useRef<CameraView>(null);
-
-//   if (!permission) return <View />;
-
-//   if (!permission.granted) {
-//     return (
-//       <View style={styles.container}>
-//         <Text style={styles.message}>
-//           We need your permission to show the camera
-//         </Text>
-//         <TouchableOpacity
-//           onPress={requestPermission}
-//           style={styles.permissionButton}
-//         >
-//           <Text style={styles.permissionButtonText}>Grant Permission</Text>
-//         </TouchableOpacity>
-//       </View>
-//     );
-//   }
-
-//   const takePicture = async () => {
-//     if (cameraRef.current) {
-//       try {
-//         const photo = await cameraRef.current.takePictureAsync({
-//           quality: 0.8,
-//           base64: false,
-//         });
-
-//         // Save to media library
-//         await MediaLibrary.saveToLibraryAsync(photo.uri);
-
-//         if (onPhotoTaken) {
-//           onPhotoTaken(photo.uri);
-//         }
-//       } catch (error) {
-//         Alert.alert("Error", "Failed to take picture");
-//         console.error("Camera error:", error);
-//       }
-//     }
-//   };
-
-//   const toggleCameraType = () => setType(type === "back" ? "front" : "back");
-//   const toggleFlash = () => setFlashMode(flashMode === "off" ? "on" : "off");
-
-//   return (
-//     <View style={styles.container}>
-//       {/* Header */}
-//       <View style={styles.header}>
-//         <TouchableOpacity onPress={onClose} style={styles.backButton}>
-//           <Ionicons name="arrow-back" size={24} color="white" />
-//         </TouchableOpacity>
-//         <Text style={styles.title}>GIANTOGRAM</Text>
-//         <View style={styles.placeholder} />
-//       </View>
-
-//       {/* Camera View */}
-//       <CameraView
-//         style={styles.camera}
-//         facing={type}
-//         flash={flashMode}
-//         ref={cameraRef}
-//       >
-//         {/* Camera Controls Overlay */}
-//         <View style={styles.overlay}>
-//           {/* Top Controls */}
-//           <View style={styles.topControls}></View>
-
-//           {/* Center - Camera Viewfinder with Mask */}
-//           <View style={styles.viewfinder}>
-//             <View style={styles.maskRow} />
-//             <View style={styles.maskCenterRow}>
-//               <View style={styles.maskSide} />
-//               <View style={styles.viewfinderFrame} />
-//               <View style={styles.maskSide} />
-//             </View>
-//             <View style={styles.maskRow} />
-//           </View>
-
-//           {/* Bottom Controls */}
-//           <View style={styles.bottomControls}>
-//             {/* Flash Toggle Button (replacing gallery) */}
-//             <TouchableOpacity
-//               onPress={toggleFlash}
-//               style={styles.galleryButton}
-//             >
-//               <Ionicons
-//                 name={flashMode === "off" ? "flash-off" : "flash"}
-//                 size={24}
-//                 color="white"
-//               />
-//             </TouchableOpacity>
-
-//             {/* Capture Button */}
-//             <TouchableOpacity
-//               onPress={takePicture}
-//               style={styles.captureButton}
-//             >
-//               <View style={styles.captureButtonInner} />
-//             </TouchableOpacity>
-
-//             {/* Flip Camera Button */}
-//             <TouchableOpacity
-//               onPress={toggleCameraType}
-//               style={styles.flipButton}
-//             >
-//               <Ionicons name="camera-reverse-outline" size={24} color="white" />
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </CameraView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "black",
-//   },
-//   message: {
-//     textAlign: "center",
-//     paddingBottom: 10,
-//     color: "white",
-//   },
-//   permissionButton: {
-//     backgroundColor: "white",
-//     padding: 15,
-//     borderRadius: 8,
-//     margin: 20,
-//   },
-//   permissionButtonText: {
-//     color: "black",
-//     textAlign: "center",
-//     fontWeight: "bold",
-//   },
-//   header: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingHorizontal: 20,
-//     paddingTop: 50,
-//     paddingBottom: 20,
-//     backgroundColor: "black",
-//   },
-//   backButton: {
-//     padding: 8,
-//   },
-//   title: {
-//     color: "white",
-//     fontSize: 18,
-//     fontWeight: "bold",
-//   },
-//   placeholder: {
-//     width: 40,
-//   },
-//   camera: {
-//     flex: 1,
-//   },
-//   overlay: {
-//     flex: 1,
-//     backgroundColor: "transparent",
-//     flexDirection: "column",
-//     justifyContent: "space-between",
-//   },
-//   topControls: {
-//     flexDirection: "row",
-//     justifyContent: "flex-end",
-//     paddingHorizontal: 20,
-//     paddingTop: 20,
-//   },
-//   controlButton: {
-//     backgroundColor: "rgba(0, 0, 0, 0.5)",
-//     borderRadius: 25,
-//     padding: 12,
-//     marginLeft: 10,
-//   },
-//   viewfinder: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   viewfinderFrame: {
-//     width: width * 0.8,
-//     height: width * 0.8,
-//     borderRadius: (width * 0.8) / 2,
-//     borderWidth: 3,
-//     borderColor: "white",
-//     backgroundColor: "transparent",
-//   },
-//   bottomControls: {
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     alignItems: "center",
-//     paddingBottom: 40,
-//     paddingHorizontal: 40,
-//   },
-//   galleryButton: {
-//     backgroundColor: "rgba(0, 0, 0, 0.6)",
-//     borderRadius: 30,
-//     padding: 15,
-//   },
-//   captureButton: {
-//     width: 80,
-//     height: 80,
-//     borderRadius: 40,
-//     backgroundColor: "white",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     borderWidth: 4,
-//     borderColor: "rgba(255, 255, 255, 0.8)",
-//   },
-//   captureButtonInner: {
-//     width: 60,
-//     height: 60,
-//     borderRadius: 30,
-//     backgroundColor: "white",
-//     borderWidth: 2,
-//     borderColor: "#ddd",
-//   },
-//   flipButton: {
-//     backgroundColor: "rgba(0, 0, 0, 0.6)",
-//     borderRadius: 30,
-//     padding: 15,
-//   },
-//   maskRow: {
-//     width: "100%",
-//     height: (height - width * 0.8) / 2,
-//     backgroundColor: "rgba(0, 0, 0, 0.6)", // Changed from 1.0 to 0.6 opacity
-//   },
-//   maskCenterRow: {
-//     flexDirection: "row",
-//   },
-//   maskSide: {
-//     flex: 1,
-//     backgroundColor: "rgba(0, 0, 0, 0.6)", // Changed from 1.0 to 0.6 opacity
-//   },
-// });
-
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import {
   View,
@@ -575,19 +7,13 @@ import {
   Dimensions,
   Alert,
   SafeAreaView,
+  Image,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-// import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import Svg, { Rect, Circle } from "react-native-svg";
-import {
-  ArrowLeft,
-  Camera,
-  Flashlight,
-  FlashlightOff,
-  RefreshCw,
-} from "lucide-react-native";
+import { ArrowLeft, Camera } from "lucide-react-native";
 
 // Constants
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -628,10 +54,12 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
   const [permission, requestPermission] = useCameraPermissions();
 
   // Memoized values
+  const [layoutHeight, setLayoutHeight] = useState(SCREEN_HEIGHT); // fallback if layout not measured yet
+
   const circleViewport = useMemo(() => {
     const diameter = SCREEN_WIDTH * CIRCLE_RATIO;
     const x = SCREEN_WIDTH / 2;
-    const y = SCREEN_HEIGHT / 2.5;
+    const y = layoutHeight / 2.3;
 
     return {
       diameter,
@@ -641,7 +69,7 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
       top: y - diameter / 2,
       left: x - diameter / 2,
     };
-  }, []);
+  }, [layoutHeight]);
 
   // Callbacks
   const handleTakePicture = useCallback(async () => {
@@ -715,15 +143,7 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
   if (!permission.granted) {
     return (
       <SafeAreaView style={styles.container}>
-        {/* <StatusBar barStyle="light-content" backgroundColor="black" /> */}
         <View style={styles.permissionContainer}>
-          {/* <Ionicons
-            name="camera-outline"
-            size={64}
-            color="white"
-            style={styles.permissionIcon}
-          /> */}
-
           <Camera size={64} color="white" style={styles.permissionIcon} />
           <Text style={styles.permissionTitle}>Camera Access Required</Text>
           <Text style={styles.permissionMessage}>
@@ -744,29 +164,29 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
 
   // Main camera view
   return (
-    <View style={styles.container}>
+    <View
+      onLayout={(e) => {
+        setLayoutHeight(e.nativeEvent.layout.height);
+      }}
+      style={styles.container}
+    >
       {/* <StatusBar barStyle="light-content" backgroundColor="black" /> */}
 
       {/* Header */}
-      <SafeAreaView>
-        <View className="mx-4 flex-row items-center justify-between bg-white rounded-md h-12 px-2">
-          <TouchableOpacity
-            onPress={handleClose}
-            className="w-10 h-10 justify-center items-center"
-            accessibilityLabel="Close camera"
-            accessibilityRole="button"
-          >
-            {/* <Ionicons name="arrow-back" size={20} color="black" /> */}
-            <ArrowLeft size={20} color={"black"} />
-          </TouchableOpacity>
-          <View className="absolute left-0 right-0 items-center">
-            <Text className="text-black text-base font-semibold">
-              Take Photo
-            </Text>
-          </View>
-          <View className="w-10" />
+      <View className="mx-4 mt-5 flex-row items-center justify-between bg-white rounded-lg h-14 px-2">
+        <TouchableOpacity
+          onPress={handleClose}
+          className="w-10 h-10 justify-center items-center"
+          accessibilityLabel="Close camera"
+          accessibilityRole="button"
+        >
+          <ArrowLeft size={20} color={"black"} />
+        </TouchableOpacity>
+        <View className="absolute left-0 right-0 items-center">
+          <Text className="text-black text-base font-semibold">Take Photo</Text>
         </View>
-      </SafeAreaView>
+        <View className="w-10" />
+      </View>
 
       {/* Masked overlay with circle cutout */}
       <MaskedView
@@ -836,25 +256,19 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
 
         <SafeAreaView>
           <View style={styles.bottomControls}>
-            {/* Flash toggle */}
+            {/* Camera flip */}
             <TouchableOpacity
-              onPress={handleToggleFlash}
+              onPress={handleToggleCameraFacing}
               style={styles.controlButton}
               accessibilityLabel={`Flash ${
                 cameraState.flashMode === "off" ? "off" : "on"
               }`}
               accessibilityRole="button"
             >
-              {/* <Ionicons
-                name={cameraState.flashMode === "off" ? "flash-off" : "flash"}
-                size={24}
-                color="white"
-              /> */}
-              {cameraState.flashMode === "off" ? (
-                <FlashlightOff size={24} color="white" />
-              ) : (
-                <Flashlight size={24} color="white" />
-              )}
+              <Image
+                className="w-10 h-10"
+                source={require("../../assets/images/camera-switch.png")}
+              />
             </TouchableOpacity>
 
             {/* Capture button */}
@@ -871,18 +285,26 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
 
-            {/* Camera flip */}
+            {/* Flash toggle */}
             <TouchableOpacity
-              onPress={handleToggleCameraFacing}
+              onPress={handleToggleFlash}
               style={styles.controlButton}
               accessibilityLabel={`Switch to ${
                 cameraState.facing === "back" ? "front" : "back"
               } camera`}
               accessibilityRole="button"
             >
-              {/* <Ionicons name="camera-reverse-outline" size={24} color="white" /> */}
-
-              <RefreshCw size={24} color="white" />
+              {cameraState.flashMode === "off" ? (
+                <Image
+                  className="w-10 h-10"
+                  source={require("../../assets/images/no-flash.png")}
+                />
+              ) : (
+                <Image
+                  className="w-10 h-10"
+                  source={require("../../assets/images/flash.png")}
+                />
+              )}
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -979,7 +401,7 @@ const styles = StyleSheet.create({
   },
   circleBorder: {
     position: "absolute",
-    borderWidth: 6,
+    borderWidth: 12,
     borderColor: "white",
   },
   controlsOverlay: {
@@ -1019,19 +441,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 4,
-    borderColor: "rgba(255, 255, 255, 0.8)",
   },
   captureButtonDisabled: {
     opacity: 0.6,
   },
   captureButtonInner: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderRadius: 30,
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderWidth: 2,
-    borderColor: "#ddd",
   },
 });
 
