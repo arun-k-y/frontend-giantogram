@@ -103,23 +103,23 @@ export default function ForgotPassword() {
           text1: data?.message || "Reset code sent successfully",
         });
 
-        if(data.redirect === true) {
-          // Navigate to the reset password page with identifier and type     
+        if (data.redirect === true) {
+          // Navigate to the reset password page with identifier and type
           router.push({
-          pathname: "/choose-recovery",
-          params: {
-            identifier: data.identifier,
-          }})
-        } else{
+            pathname: "/choose-recovery",
+            params: {
+              identifier: data.identifier,
+            },
+          });
+        } else {
           router.push({
-          pathname: "/reset-password",
-          params: {
-            identifier: identifier.trim(),
-            identifierType,
-          },
-        });
+            pathname: "/reset-password",
+            params: {
+              identifier: identifier.trim(),
+              identifierType,
+            },
+          });
         }
-        
       } else {
         setErrorMessage(data.message || "Failed to send reset code");
       }
@@ -196,7 +196,7 @@ export default function ForgotPassword() {
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
-            {`[ ${errorMessage} ]`}
+                {`[ ${errorMessage} ]`}
               </Text>
             </View>
           </View>
