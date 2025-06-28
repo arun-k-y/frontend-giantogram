@@ -38,7 +38,7 @@ export const CountryPickerModal = ({
   );
 
   return (
-    <Modal visible={visible} animationType="fade" transparent={false}>
+    <Modal visible={visible} animationType="none" transparent={false}>
       <SafeAreaView className="flex-1 bg-black ">
         {/* Optional StatusBar for Android */}
         {Platform.OS === "android" && (

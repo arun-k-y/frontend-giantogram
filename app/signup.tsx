@@ -18,6 +18,7 @@ import { countryCodeOptions, genderOptions } from "./constants/constants";
 import BackButton from "./components/BackButton";
 import useErrorMessage from "./hooks/useErrorMessage";
 import { ErrorPopup } from "./components/ErrorPopup";
+import { baseUrl } from "./config/config";
 
 // Conditional import for native platforms only
 let DateTimePicker: any = null;
@@ -67,7 +68,7 @@ export default function SignUp() {
     gender: false,
   });
 
-  const baseUrl = "http://localhost:2001";
+  // const baseUrl = "http://localhost:2001";
   // const baseUrl = "http://localhost:2001";
 
   const detectInputType = (input: string) => {
@@ -339,8 +340,8 @@ export default function SignUp() {
         //   text2: data.message,
         // });
 
-        const identifier =
-          inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
+        const identifier = username
+          // inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
 
         router.push({
           pathname: "/enter-otp" as any,

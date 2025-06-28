@@ -205,6 +205,8 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+import { baseUrl } from "./config/config";
+
 import BackButton from "./components/BackButton";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -212,7 +214,7 @@ export default function ChooseRecoveryMethod() {
   const [emailOptions, setEmailOptions] = useState<string[]>([]);
   const [phoneOptions, setPhoneOptions] = useState<string[]>([]);
   const { identifier } = useLocalSearchParams();
-  const baseUrl = "http://localhost:2001";
+  // const baseUrl = "http://localhost:2001";
   const router = useRouter();
 
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);

@@ -14,8 +14,8 @@ import {
   View,
 } from "react-native";
 import BackButton from "./components/BackButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "./components/auth-context";
+import { baseUrl } from "./config/config";
 
 export default function SetPassword() {
   const { identifier } = useLocalSearchParams();
@@ -26,17 +26,13 @@ export default function SetPassword() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-  const {accessToken,} = useAuth()
+  const { accessToken } = useAuth();
 
   // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
     newPassword: false,
     confirmPassword: false,
   });
-
-  const baseUrl = "http://localhost:2001"; // Change to your actual base URL
-  // const baseUrl = "https://next-node-auth.onrender.com"; // For production
-  // const baseUrl = 'http://localhost:2001'
 
   const validateInputs = () => {
     const errors = {
@@ -82,8 +78,8 @@ export default function SetPassword() {
 
     setIsLoading(true);
     try {
-      console.log("Attempting to reset password for:", { identifier });
-      const token = accessToken
+      console.log("Attempting to set password for:", { identifier });
+      const token = accessToken;
 
       const response = await fetch(`${baseUrl}/api/auth/set-password`, {
         method: "POST",
@@ -251,7 +247,7 @@ export default function SetPassword() {
           <View className="absolute bottom-0 w-full">
             <View className=" py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
-            {`[ ${errorMessage} ]`}
+                {`[ ${errorMessage} ]`}
               </Text>
             </View>
           </View>
@@ -264,7 +260,7 @@ export default function SetPassword() {
     <>
       {Platform.OS === "web" ? (
         <>
-          <BackButton title="Reset Password" />
+          <BackButton title="Set Password" />
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
@@ -276,7 +272,7 @@ export default function SetPassword() {
         </>
       ) : (
         <>
-          <BackButton title="Reset Password" />
+          <BackButton title="Set Password" />
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1 }}

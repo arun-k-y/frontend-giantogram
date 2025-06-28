@@ -1137,6 +1137,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useAuth } from "./components/auth-context";
 import ConfirmationModal from "./components/ConfirmationModal"; // Import the reusable modal
+import { baseUrl } from "./config/config";
 
 export default function HomePage() {
   const [profileImage, setProfileImage] = useState(null);
@@ -1154,7 +1155,6 @@ export default function HomePage() {
   const [isDeactivated, setIsDeactivated] = useState<boolean | null>(null);
 
   const router = useRouter();
-  const baseUrl = "http://localhost:2001";
   const { accessToken } = useAuth();
 
   useEffect(() => {

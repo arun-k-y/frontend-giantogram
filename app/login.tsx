@@ -1,6 +1,8 @@
 import { ClosedEyeSVG, EyeSVG } from "./svgs/SVG";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { baseUrl } from "./config/config";
+
 import {
   ActivityIndicator,
   Keyboard,
@@ -28,7 +30,6 @@ export default function Login() {
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
 
-  const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
   // const baseUrl = 'http://localhost:2001'
   const { errorMessage, showError, dismissError, slideAnim } =
     useErrorMessage();
@@ -286,7 +287,7 @@ export default function Login() {
           <TouchableOpacity
             className="bg-white py-2 px-2 rounded-lg"
             // onPress={() => router.push("/deactivated")}
-            onPress={() => router.push("/forgot-password")}
+            onPress={() => router.push("/profile-pic")}
           >
             <Text className="text-[#332E2E] font-normal">Forgot Password?</Text>
           </TouchableOpacity>

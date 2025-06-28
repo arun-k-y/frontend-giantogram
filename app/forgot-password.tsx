@@ -14,6 +14,7 @@ import {
 import Toast from "react-native-toast-message";
 import EmailOrPhoneInput from "./components/EmailOrPhoneInput";
 import BackButton from "./components/BackButton";
+import { baseUrl } from "./config/config";
 
 export default function ForgotPassword() {
   const [identifier, setIdentifier] = useState(""); // Changed from email to identifier
@@ -25,7 +26,7 @@ export default function ForgotPassword() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
 
-  const baseUrl = "http://localhost:2001";
+  // const baseUrl = "http://localhost:2001";
   // const baseUrl = 'http://localhost:2001'
 
   // Updated validation functions to handle both email and phone

@@ -9,7 +9,11 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  Modal,
+  Pressable,
 } from "react-native";
+import { baseUrl } from "./config/config";
+
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -22,7 +26,7 @@ import CustomGalleryScreen from "./components/CustomGallery";
 // Constants
 const DEFAULT_AVATAR =
   "https://ui-avatars.com/api/?name=User&background=random";
-const baseUrl = "http://localhost:2001";
+// const baseUrl = "http://localhost:2001";
 
 // Screen constants
 const SCREENS = {
@@ -228,22 +232,50 @@ export default function ProfilePicUploader({
     uploadImage(cameraImage);
   }, []);
 
-  const handleGallerySelect = useCallback((uri: string) => {
-    const selectedImage: ImagePicker.ImagePickerAsset = {
-      uri,
-      width: 0,
-      height: 0,
-      assetId: null,
-      fileName: `gallery_${Date.now()}.jpg`,
-      fileSize: 0,
-      type: "image",
-      mimeType: "image/jpeg",
-    };
+  // const handleGallerySelect = useCallback((uri: string) => {
+  //   const selectedImage: ImagePicker.ImagePickerAsset = {
+  //     uri,
+  //     width: 0,
+  //     height: 0,
+  //     assetId: null,
+  //     fileName: `gallery_${Date.now()}.jpg`,
+  //     fileSize: 0,
+  //     type: "image",
+  //     mimeType: "image/jpeg",
+  //   };
 
-    setImage(selectedImage);
-    setPreview(uri);
-    setCurrentScreen(SCREENS.PREVIEW);
-  }, []);
+  //   setImage(selectedImage);
+  //   setPreview(uri);
+  //   setCurrentScreen(SCREENS.PREVIEW);
+  // }, []);
+
+  const handleGallerySelect = useCallback(
+    (imageData: {
+      uri: string;
+      width: number;
+      height: number;
+      fileName: string;
+      fileSize: number;
+      type: string;
+      mimeType: string;
+    }) => {
+      const selectedImage: ImagePicker.ImagePickerAsset = {
+        uri: imageData.uri,
+        width: imageData.width,
+        height: imageData.height,
+        assetId: null,
+        fileName: imageData.fileName,
+        fileSize: imageData.fileSize,
+        type: imageData.type as "image" | "video" | "livePhoto" | "pairedVideo",
+        mimeType: imageData.mimeType,
+      };
+
+      setImage(selectedImage);
+      setPreview(imageData.uri);
+      setCurrentScreen(SCREENS.PREVIEW);
+    },
+    []
+  );
 
   // Screen Components
   const WelcomeScreen = () => (
@@ -356,7 +388,7 @@ export default function ProfilePicUploader({
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.confirmationContent}>
-        <Text style={styles.title}>GIANTOGRAM</Text>
+        {/* <Text style={styles.title}>GIANTOGRAM</Text> */}
         <Text style={styles.subtitle}>Welcome to Giantogram</Text>
         <Text style={styles.description}>
           Platform that provides everything
@@ -393,43 +425,95 @@ export default function ProfilePicUploader({
     </ScrollView>
   );
 
-  const PopupScreen = () => (
-    <View style={styles.popupContainer}>
-      <View style={styles.popupContent}>
-        <Text style={styles.popupTitle}>Select Photo Source</Text>
+  // const PopupScreen = () => (
+  //   <View style={styles.popupContainer}>
+  //     <View style={styles.popupContent}>
 
-        <TouchableOpacity
-          style={styles.popupButton}
-          onPress={() => handleScreenChange(SCREENS.CAMERA)}
-          accessibilityLabel="Open camera"
-          accessibilityRole="button"
-        >
-          <Text style={styles.popupButtonText}>Take Photo</Text>
-        </TouchableOpacity>
+  //       <TouchableOpacity
+  //         style={styles.popupButton}
+  //         onPress={() => handleScreenChange(SCREENS.CAMERA)}
+  //         accessibilityLabel="Open camera"
+  //         accessibilityRole="button"
+  //       >
+  //         <Text style={styles.popupButtonText}>Take Photo</Text>
+  //       </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.popupButton}
-          // onPress={() => pickImageFromSource(false)}
-          onPress={() => handleScreenChange(SCREENS.CUSTOM_GALLERY)}
-          accessibilityLabel="Choose from gallery"
-          accessibilityRole="button"
-        >
-          <Text style={styles.popupButtonText}>Choose from Gallery</Text>
-        </TouchableOpacity>
+  //       <TouchableOpacity
+  //         style={styles.popupButton}
+  //         // onPress={() => pickImageFromSource(false)}
+  //         onPress={() => handleScreenChange(SCREENS.CUSTOM_GALLERY)}
+  //         accessibilityLabel="Gallery"
+  //         accessibilityRole="button"
+  //       >
+  //         <Text style={styles.popupButtonText}>Choose from Gallery</Text>
+  //       </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.popupCancelButton}
-          onPress={() => handleScreenChange(SCREENS.WELCOME)}
-          accessibilityLabel="Cancel"
-          accessibilityRole="button"
-        >
-          <Text style={styles.popupCancelText}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  //       <TouchableOpacity
+  //         style={styles.popupCancelButton}
+  //         onPress={() => handleScreenChange(SCREENS.WELCOME)}
+  //         accessibilityLabel="Cancel"
+  //         accessibilityRole="button"
+  //       >
+  //         <Text style={styles.popupCancelText}>Cancel</Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   </View>
+  // );
 
   // Render current screen
+
+  const PopupScreen = ({ visible, onClose, onCamera, onGallery }: any) => {
+    return (
+      <Modal
+        visible={visible}
+        animationType="none"
+        transparent
+        onRequestClose={onClose}
+      >
+        <View className="flex-1 bg-black justify-center items-center">
+          <Pressable
+            className="absolute top-0 left-0 right-0 bottom-0"
+            onPress={onClose}
+          />
+          <View className="w-[90%] bg-white rounded-2xl px-6 py-20 z-10">
+            <TouchableOpacity
+              className="bg-black rounded-xl py-4 mb-3"
+              onPress={onCamera}
+              accessibilityLabel="Open camera"
+              accessibilityRole="button"
+            >
+              <Text className="text-white text-center font-semibold text-base">
+                Take Photo
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-black rounded-xl py-4 "
+              onPress={onGallery}
+              accessibilityLabel="Gallery"
+              accessibilityRole="button"
+            >
+              <Text className="text-white text-center font-semibold text-base">
+                Gallery
+              </Text>
+            </TouchableOpacity>
+
+            {/* <TouchableOpacity
+              className="py-3 mt-2"
+              onPress={onClose}
+              accessibilityLabel="Cancel"
+              accessibilityRole="button"
+            >
+              <Text className="text-gray-500 text-center text-base">
+                Cancel
+              </Text>
+            </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   const renderCurrentScreen = () => {
     switch (currentScreen) {
       case SCREENS.WELCOME:
@@ -441,8 +525,8 @@ export default function ProfilePicUploader({
             onClose={() => handleScreenChange(SCREENS.WELCOME)}
           />
         );
-      case SCREENS.POPUP:
-        return <PopupScreen />;
+      // case SCREENS.POPUP:
+      //   return <PopupScreen />;
       case SCREENS.PREVIEW:
         return <PreviewScreen />;
       case SCREENS.CONFIRMATION:
@@ -462,6 +546,13 @@ export default function ProfilePicUploader({
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       {renderCurrentScreen()}
+
+      <PopupScreen
+        visible={currentScreen === SCREENS.POPUP}
+        onClose={() => handleScreenChange(SCREENS.WELCOME)}
+        onCamera={() => handleScreenChange(SCREENS.CAMERA)}
+        onGallery={() => handleScreenChange(SCREENS.CUSTOM_GALLERY)}
+      />
     </SafeAreaView>
   );
 }
@@ -658,5 +749,11 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: "50%",
     transform: [{ translateX: -64 }],
+  },
+  popupOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

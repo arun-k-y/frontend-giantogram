@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
+import { baseUrl } from "./config/config";
 
 export default function ResetPassword() {
   const { identifier, username } = useLocalSearchParams();
@@ -34,7 +35,7 @@ export default function ResetPassword() {
     confirmPassword: false,
   });
 
-  const baseUrl = "http://localhost:2001"; // Change to your actual base URL
+  // const baseUrl = "http://localhost:2001"; // Change to your actual base URL
   // const baseUrl = "https://next-node-auth.onrender.com"; // For production
   // const baseUrl = 'http://localhost:2001'
 

@@ -16,6 +16,7 @@ import {
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
 import { useAuth } from "./components/auth-context";
+import { baseUrl } from "./config/config";
 
 export default function EnterOtp() {
   const [otp, setOtp] = useState("");
@@ -24,6 +25,7 @@ export default function EnterOtp() {
   const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(59);
   const { accessToken } = useAuth();
+  const { setAuthData } = useAuth();
 
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -32,10 +34,6 @@ export default function EnterOtp() {
   const deliveryMethod = params.deliveryMethod || "email";
   const maskedDestination = params.maskedDestination || "";
   const identifier = params.identifier || "";
-
-  const baseUrl = "http://localhost:2001";
-
-  // const baseUrl = "http://localhost:2001";
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -77,21 +75,31 @@ export default function EnterOtp() {
 
       if (response.ok && result?.token) {
         // Store user data
-        await AsyncStorage.setItem("userToken", result.token);
-        await AsyncStorage.setItem(
-          "isDeactivated",
-          JSON.stringify(result?.user?.isDeactivated || false)
+        // await AsyncStorage.setItem("userToken", result.token);
+        // await AsyncStorage.setItem(
+        //   "isDeactivated",
+        //   JSON.stringify(result?.user?.isDeactivated || false)
+        // );
+
+        // // Store email if available
+        // if (result.user?.email) {
+        //   await AsyncStorage.setItem("userEmail", result.user.email);
+        // }
+
+        // // Store mobile if available
+        // if (result.user?.mobile) {
+        //   await AsyncStorage.setItem("userMobile", result.user.mobile);
+        // }
+
+        setAuthData(
+          {
+            accessToken: String(result.token),
+            email: String(result.user.email),
+            mobile: String(result.user.mobile),
+            isDeactivated: result?.user?.isDeactivated === true,
+          },
+          false // 👈 DON'T REMEMBER, only in memory
         );
-
-        // Store email if available
-        if (result.user?.email) {
-          await AsyncStorage.setItem("userEmail", result.user.email);
-        }
-
-        // Store mobile if available
-        if (result.user?.mobile) {
-          await AsyncStorage.setItem("userMobile", result.user.mobile);
-        }
 
         // Toast.show({
         //   type: "success",
@@ -305,7 +313,7 @@ export default function EnterOtp() {
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
               <Text className="text-[#F11111] text-xl px-2 text-center font-normal">
-            {`[ ${errorMessage} ]`}
+                {`[ ${errorMessage} ]`}
               </Text>
             </View>
           </View>

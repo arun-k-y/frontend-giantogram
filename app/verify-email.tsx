@@ -378,6 +378,7 @@ import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
 import { useAuth } from "./components/auth-context";
 import DeactivatedAccountModal from "./components/DeactivatedAccountModal";
+import { baseUrl } from "./config/config";
 
 export default function Verify2FA() {
   const { accessToken, email, mobile, isDeactivated } = useAuth();
@@ -400,7 +401,7 @@ export default function Verify2FA() {
   const maskedDestination = params.maskedDestination || "";
   const identifier = params.identifier || "";
 
-  const baseUrl = "http://localhost:2001";
+  // const baseUrl = "http://localhost:2001";
 
   // Countdown timer for resend button
   useEffect(() => {

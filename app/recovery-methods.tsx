@@ -8,11 +8,11 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useAuth } from "./components/auth-context";
+import { baseUrl } from "./config/config";
 
-const baseUrl = "http://localhost:2001";
+// const baseUrl = "http://localhost:2001";
 
 export default function RecoveryMethods() {
   const [emails, setEmails] = useState<string[]>([]);

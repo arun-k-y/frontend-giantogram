@@ -159,6 +159,15 @@ export default function CustomGalleryScreen({
         className="w-full h-full "
         resizeMode="cover"
       />
+
+      {/* {typeof item.uri === "string" && (
+        <Image
+          source={{ uri: item.uri }}
+          className="w-full h-full"
+          resizeMode="cover"
+        />
+      )} */}
+
       {isSelecting && (
         <View className="absolute inset-0 bg-black/20 rounded-lg items-center justify-center">
           <ActivityIndicator size="small" color="white" />
@@ -227,9 +236,9 @@ export default function CustomGalleryScreen({
             isLoading ? (
               <View className="py-4 items-center">
                 <ActivityIndicator size="small" color="#555" />
-                <Text className="text-gray-600 mt-2">
+                {/* <Text className="text-gray-600 mt-2">
                   Loading more photos...
-                </Text>
+                </Text> */}
               </View>
             ) : null
           }
