@@ -340,8 +340,8 @@ export default function SignUp() {
         //   text2: data.message,
         // });
 
-        const identifier = username
-          // inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
+        const identifier = username;
+        // inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
 
         router.push({
           pathname: "/enter-otp" as any,
@@ -489,8 +489,8 @@ export default function SignUp() {
           />
         </View>
 
-        {showCountryCodeDropdown && (
-          <View className="absolute w-20 z-10">
+        {/* {showCountryCodeDropdown && (
+          // <View className="absolute w-20 z-10">
             <CountryPickerModal
               visible={showCountryCodeDropdown}
               onClose={() => setShowCountryCodeDropdown(false)}
@@ -500,8 +500,8 @@ export default function SignUp() {
               }}
               countryOptions={countryCodeOptions}
             />
-          </View>
-        )}
+          // </View>
+        )} */}
       </View>
 
       <TextInput
@@ -663,53 +663,6 @@ export default function SignUp() {
     </View>
   );
 
-  // return Platform.OS === "web" ? (
-  //   <>
-  //     <BackButton title="Creating New Account" onPress={() => router.back()} />
-  //     <ScrollView
-  //       contentContainerStyle={{ flexGrow: 1 }}
-  //       keyboardShouldPersistTaps="handled"
-  //     >
-  //       {FormLayout()}
-  //     </ScrollView>
-  //     {errorMessage && (
-  //       <>
-  //         <ErrorPopup
-  //           errorMessage={errorMessage}
-  //           slideAnim={slideAnim}
-  //           onDismiss={dismissError}
-  //         />
-  //       </>
-  //     )}
-  //   </>
-  // ) : (
-  //   <>
-  //     <BackButton title="Creating New Account" onPress={() => router.back()} />
-  //     <KeyboardAvoidingView
-  //       behavior={Platform.OS === "ios" ? "padding" : "height"}
-  //       style={{ flex: 1 }}
-  //     >
-  //       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-  //         <ScrollView
-  //           contentContainerStyle={{ flexGrow: 1 }}
-  //           keyboardShouldPersistTaps="handled"
-  //         >
-  //           {FormLayout()}
-  //         </ScrollView>
-  //       </TouchableWithoutFeedback>
-  //     </KeyboardAvoidingView>
-  //     {errorMessage && (
-  //       <>
-  //         <ErrorPopup
-  //           errorMessage={errorMessage}
-  //           slideAnim={slideAnim}
-  //           onDismiss={dismissError}
-  //         />
-  //       </>
-  //     )}
-  //   </>
-  // );
-
   return (
     <>
       {Platform.OS === "web" ? (
@@ -755,6 +708,18 @@ export default function SignUp() {
             onDismiss={dismissError}
           />
         </>
+      )}
+
+      {showCountryCodeDropdown && (
+        <CountryPickerModal
+          visible={showCountryCodeDropdown}
+          onClose={() => setShowCountryCodeDropdown(false)}
+          onSelect={(code) => {
+            setSelectedCountryCode(code);
+            setShowCountryCodeDropdown(false);
+          }}
+          countryOptions={countryCodeOptions}
+        />
       )}
     </>
   );

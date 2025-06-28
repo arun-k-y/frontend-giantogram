@@ -46,12 +46,6 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
       {isMobileInput && (
         <TouchableOpacity
           onPress={() => setShowDropdown(!showDropdown)}
-          //   className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
-          //     fieldError
-          //       ? "bg-white border border-[#FF6B6B]"
-          //       : "bg-white border border-[#B2EBF2]"
-          //   }`}
-
           className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
             fieldError
               ? "bg-white border text-[#F11111] border-[#FF6B6B]"
@@ -68,11 +62,6 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
       )}
 
       <TextInput
-        // className={`flex-1 text-[#1F1E1E]  text-lg py-5 px-5 ${
-        //   fieldError
-        //     ? "bg-white border border-[#FF6B6B] border-l-0"
-        //     : "bg-white border border-[#B2EBF2] border-l-0"
-        // } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
         className={`flex-1 py-5 px-5 ${
           fieldError
             ? "bg-white border text-[#F11111] border-[#FF6B6B] border-l-0"
@@ -84,19 +73,16 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
         keyboardType="default"
         autoCapitalize="none"
         placeholderTextColor="#555"
-                style={{ fontSize: 18 }}
-
+        style={{ fontSize: 18 }}
       />
 
       {showDropdown && (
-        <View className="absolute top-[65px] left-0 z-50">
-          <CountryPickerModal
-            visible={showDropdown}
-            onClose={() => setShowDropdown(false)}
-            onSelect={(code) => setSelectedCountryCode(code)}
-            countryOptions={countryCodeOptions}
-          />
-        </View>
+        <CountryPickerModal
+          visible={showDropdown}
+          onClose={() => setShowDropdown(false)}
+          onSelect={(code) => setSelectedCountryCode(code)}
+          countryOptions={countryCodeOptions}
+        />
       )}
     </View>
   );
