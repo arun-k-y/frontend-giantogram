@@ -305,7 +305,7 @@ export default function EnterOtp() {
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
               <Text className="text-[#F11111] text-xl px-2 text-center font-normal">
-                {errorMessage}
+            {`[ ${errorMessage} ]`}
               </Text>
             </View>
           </View>

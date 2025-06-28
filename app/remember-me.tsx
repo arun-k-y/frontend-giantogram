@@ -1,16 +1,14 @@
-import React, { useCallback } from "react";
+import React from "react";
 import {
   View,
   Image,
   TouchableOpacity,
   Text,
   ScrollView,
-  Dimensions,
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "./components/auth-context";
 
 export default function RememberMe() {

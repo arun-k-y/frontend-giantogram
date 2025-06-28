@@ -10,7 +10,6 @@ import {
   Platform,
   RefreshControl,
   ScrollView,
-  StatusBar,
   Text,
   TouchableOpacity,
   View,

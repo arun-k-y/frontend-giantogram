@@ -242,6 +242,19 @@ export default function ChooseRecoveryMethod() {
     })();
   }, []);
 
+  const maskPhone = (phone: string) => {
+    return phone.replace(/(\d{2})(\d{2})(\d{4})(\d{2})/, "+$1 **** $4");
+  };
+
+  const maskEmail = (email: string) => {
+    const [user, domain] = email.split("@");
+    const maskedUser =
+      user.length <= 2
+        ? "*".repeat(user.length)
+        : user[0] + "*".repeat(user.length - 2) + user.slice(-1);
+    return `${maskedUser}@${domain}`;
+  };
+
   const handleConfirm = async () => {
     if (!selectedPhone && !selectedEmail) {
       setError("Choose one Number or Gmail");
@@ -296,7 +309,7 @@ export default function ChooseRecoveryMethod() {
                 setSelectedEmail(null);
               }}
             >
-              <Text style={styles.optionText}>{phone}</Text>
+              <Text style={styles.optionText}>{maskPhone(phone)}</Text>
               <Text style={styles.radio}>
                 {selectedPhone === phone ? "●" : "○"}
               </Text>
@@ -315,7 +328,7 @@ export default function ChooseRecoveryMethod() {
                 setSelectedPhone(null);
               }}
             >
-              <Text style={styles.optionText}>{email}</Text>
+              <Text style={styles.optionText}>{maskEmail(email)}</Text>
               <Text style={styles.radio}>
                 {selectedEmail === email ? "●" : "○"}
               </Text>

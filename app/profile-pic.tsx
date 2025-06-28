@@ -7,20 +7,17 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
-  ActionSheetIOS,
-  Platform,
-  StatusBar,
   Dimensions,
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import CustomCamera from "./components/CustomCamera";
 import BackButton from "./components/BackButton";
 import * as FileSystem from "expo-file-system";
 import { useAuth } from "./components/auth-context";
+import CustomGalleryScreen from "./components/CustomGallery";
 
 // Constants
 const DEFAULT_AVATAR =
@@ -34,6 +31,7 @@ const SCREENS = {
   POPUP: "popup",
   PREVIEW: "preview",
   CONFIRMATION: "confirmation",
+  CUSTOM_GALLERY: "custom_gallery", // ⬅️ Add this line
 } as const;
 
 type Screen = (typeof SCREENS)[keyof typeof SCREENS];
@@ -115,260 +113,13 @@ export default function ProfilePicUploader({
     return true;
   }, []);
 
-  const pickImageFromSource = useCallback(
-    async (fromCamera: boolean) => {
-      const permissionGranted = await requestPermissions(
-        fromCamera ? "camera" : "library"
-      );
-      if (!permissionGranted) return;
-
-      try {
-        const options = {
-          allowsEditing: true,
-          aspect: [1, 1] as [number, number],
-          quality: 0.8,
-        };
-
-        const result = fromCamera
-          ? await ImagePicker.launchCameraAsync(options)
-          : await ImagePicker.launchImageLibraryAsync({
-              ...options,
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            });
-
-        if (!result.canceled && result.assets[0]) {
-          const selectedImage = result.assets[0];
-          setImage(selectedImage);
-          setPreview(selectedImage.uri);
-          setCurrentScreen(SCREENS.PREVIEW);
-        }
-      } catch (error) {
-        console.error("Image picker error:", error);
-        Alert.alert("Error", "Failed to select image. Please try again.");
-      }
-    },
-    [requestPermissions]
-  );
-
-  // Platform-specific picker
-  const showImagePickerOptions = useCallback(() => {
-    if (Platform.OS === "ios") {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ["Cancel", "Take Photo", "Choose from Library"],
-          cancelButtonIndex: 0,
-          title: "Select Profile Picture",
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) pickImageFromSource(true);
-          else if (buttonIndex === 2) pickImageFromSource(false);
-        }
-      );
-    } else {
-      Alert.alert(
-        "Select Profile Picture",
-        "Choose how you'd like to add your photo:",
-        [
-          { text: "Take Photo", onPress: () => pickImageFromSource(true) },
-          {
-            text: "Choose from Library",
-            onPress: () => pickImageFromSource(false),
-          },
-          { text: "Cancel", style: "cancel" },
-        ]
-      );
-    }
-  }, [pickImageFromSource]);
-
-  // Upload function
-  // const uploadImage = useCallback(
-  //   async (isUpdate = false) => {
-  //     if (!image?.uri) {
-  //       Alert.alert("No Image", "Please select an image first.");
-  //       return;
-  //     }
-
-  //     setUploading(true);
-  //     setUploadError(null);
-  //     clearUploadTimeout();
-
-  //     // Set upload timeout
-  //     uploadTimeoutRef.current = setTimeout(() => {
-  //       setUploading(false);
-  //       setUploadError("Upload timeout. Please try again.");
-  //       Alert.alert(
-  //         "Upload Timeout",
-  //         "The upload is taking too long. Please check your connection and try again."
-  //       );
-  //     }, 30000); // 30 second timeout
-
-  //     try {
-  //       const formData = new FormData();
-
-  //       // Extract filename and type
-  //       const uriParts = image.uri.split("/");
-  //       const filename =
-  //         uriParts[uriParts.length - 1] || `profile_${Date.now()}.jpg`;
-  //       const fileType = image.type || "image/jpeg";
-
-  //       formData.append("profilePicture", {
-  //         uri: image.uri,
-  //         name: filename,
-  //         type: fileType,
-  //       } as any);
-
-  //       if (isUpdate) {
-  //         formData.append("isUpdate", "true");
-  //       }
-
-  //       const token = await AsyncStorage.getItem("userToken");
-  //       if (!token) {
-  //         throw new Error("Authentication required. Please log in again.");
-  //       }
-
-  //       const response = await fetch(`${baseUrl}/api/auth/upload-profile`, {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: formData,
-  //       });
-
-  //       clearUploadTimeout();
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json().catch(() => ({}));
-  //         throw new Error(
-  //           errorData.message || `Upload failed with status ${response.status}`
-  //         );
-  //       }
-
-  //       const data = await response.json();
-  //       const uploadedUrl = data?.url || data?.profilePicture || preview;
-
-  //       // Success callbacks
-  //       onUpload?.(uploadedUrl);
-  //       setImage(null);
-  //       setCurrentScreen(SCREENS.CONFIRMATION);
-  //     } catch (error: any) {
-  //       console.error("Upload error:", error);
-  //       const errorMessage =
-  //         error.message || "Upload failed. Please try again.";
-  //       setUploadError(errorMessage);
-  //       Alert.alert("Upload Failed", errorMessage);
-  //     } finally {
-  //       setUploading(false);
-  //       clearUploadTimeout();
-  //     }
-  //   },
-  //   [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
-  // );
-
-  // const uploadImage = useCallback(
-  //   async (isUpdate = false) => {
-  //     if (!image?.uri) {
-  //       Alert.alert("No Image", "Please select an image first.");
-  //       return;
-  //     }
-
-  //     console.log("📤 Starting image upload...");
-  //     setUploading(true);
-  //     setUploadError(null);
-  //     clearUploadTimeout();
-
-  //     // Set timeout fallback
-  //     uploadTimeoutRef.current = setTimeout(() => {
-  //       setUploading(false);
-  //       setUploadError("Upload timeout. Please try again.");
-  //       Alert.alert(
-  //         "Upload Timeout",
-  //         "The upload is taking too long. Please check your connection and try again."
-  //       );
-  //     }, 30000); // 30 seconds
-
-  //     try {
-  //       // Extract filename and MIME type
-  //       const uriParts = image.uri.split("/");
-  //       const filename =
-  //         uriParts[uriParts.length - 1] || `profile_${Date.now()}.jpg`;
-  //       const mimeType = image.mimeType || "image/jpeg";
-
-  //       // Read file as base64
-  //       const base64Image = await FileSystem.readAsStringAsync(image.uri, {
-  //         encoding: FileSystem.EncodingType.Base64,
-  //       });
-
-  //       console.log("📦 Read image as base64.");
-
-  //       const formData = new FormData();
-  //       formData.append("profilePicture", {
-  //         uri: image.uri,
-  //         name: filename,
-  //         type: mimeType,
-  //       } as any);
-
-  //       if (isUpdate) {
-  //         formData.append("isUpdate", "true");
-  //       }
-
-  //       const token = await AsyncStorage.getItem("userToken");
-  //       if (!token) {
-  //         throw new Error("Authentication required. Please log in again.");
-  //       }
-
-  //       console.log("🔑 Retrieved token:", token);
-  //       console.log(
-  //         "🌐 Sending request to:",
-  //         `${baseUrl}/api/auth/upload-profile`
-  //       );
-
-  //       const response = await fetch(`${baseUrl}/api/auth/upload-profile`, {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           // ⚠️ Do NOT set Content-Type manually with FormData
-  //         },
-  //         body: formData,
-  //       });
-
-  //       const res = await response.json()
-
-  //       if(res){
-  //         console.log("result.....", res)
-  //       }
-  //       clearUploadTimeout();
-  //       if (!response.ok) {
-  //         const errorData = await response.json().catch(() => ({}));
-  //         throw new Error(
-  //           errorData.message || `Upload failed with status ${response.status}`
-  //         );
-  //       }
-
-  //       const data = await response.json();
-  //       const uploadedUrl = data?.url || data?.profilePicture || preview;
-
-  //       console.log("✅ Upload success:", uploadedUrl);
-
-  //       onUpload?.(uploadedUrl);
-  //       setImage(null);
-  //       setCurrentScreen(SCREENS.CONFIRMATION);
-  //     } catch (error: any) {
-  //       console.error("❌ Upload error:", error);
-  //       const errorMessage =
-  //         error.message || "Upload failed. Please try again.";
-  //       setUploadError(errorMessage);
-  //       Alert.alert("Upload Failed", errorMessage);
-  //     } finally {
-  //       setUploading(false);
-  //       clearUploadTimeout();
-  //     }
-  //   },
-  //   [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
-  // );
+  // const uploadImage = useCallback( async (isUpdate = false) => {
 
   const uploadImage = useCallback(
-    async (isUpdate = false) => {
-      if (!image?.uri) {
+    async (imageToUpload?: ImagePicker.ImagePickerAsset) => {
+      const targetImage = imageToUpload || image;
+
+      if (!targetImage?.uri) {
         Alert.alert("No Image", "Please select an image first.");
         return;
       }
@@ -385,7 +136,7 @@ export default function ProfilePicUploader({
         console.log("✅ Retrieved token:", token);
 
         // Convert local file URI to a Cloudinary-compatible file
-        const fileUri = image.uri;
+        const fileUri = targetImage.uri;
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
         if (!fileInfo.exists) throw new Error("File does not exist");
 
@@ -400,9 +151,9 @@ export default function ProfilePicUploader({
           type: fileType,
         } as any);
 
-        if (isUpdate) {
-          formData.append("isUpdate", "true");
-        }
+        // if (isUpdate) {
+        //   formData.append("isUpdate", "true");
+        // }
 
         console.log(
           "📤 Sending request to:",
@@ -444,107 +195,6 @@ export default function ProfilePicUploader({
     [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
   );
 
-  //   const uploadImage = useCallback(
-  //   async (isUpdate = false) => {
-  //     if (!image?.uri) {
-  //       Alert.alert("No Image", "Please select an image first.");
-  //       console.log("Upload aborted: No image selected.");
-  //       return;
-  //     }
-
-  //     setUploading(true);
-  //     setUploadError(null);
-  //     clearUploadTimeout();
-
-  //     console.log("Starting image upload...");
-
-  //     // Set upload timeout
-  //     uploadTimeoutRef.current = setTimeout(() => {
-  //       setUploading(false);
-  //       setUploadError("Upload timeout. Please try again.");
-  //       console.log("Upload timeout hit.");
-  //       Alert.alert(
-  //         "Upload Timeout",
-  //         "The upload is taking too long. Please check your connection and try again."
-  //       );
-  //     }, 30000); // 30 seconds
-
-  //     try {
-  //       const formData = new FormData();
-
-  //       // Extract filename and type
-  //       const uriParts = image.uri.split("/");
-  //       const filename =
-  //         uriParts[uriParts.length - 1] || `profile_${Date.now()}.jpg`;
-  //       const fileType = image.type || "image/jpeg";
-
-  //       console.log("Image details:", {
-  //         uri: image.uri,
-  //         name: filename,
-  //         type: fileType,
-  //       });
-
-  //       formData.append("profilePicture", {
-  //         uri: image.uri,
-  //         name: filename,
-  //         type: fileType,
-  //       } as any);
-
-  //       if (isUpdate) {
-  //         formData.append("isUpdate", "true");
-  //         console.log("Appending isUpdate: true");
-  //       }
-
-  //       const token = await AsyncStorage.getItem("userToken");
-  //       console.log("Retrieved token:", token);
-
-  //       if (!token) {
-  //         throw new Error("Authentication required. Please log in again.");
-  //       }
-
-  //       console.log("Sending request to:", `${baseUrl}/api/auth/upload-profile`);
-
-  //       const response = await fetch(`${baseUrl}/api/auth/upload-profile`, {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: formData,
-  //       });
-
-  //       clearUploadTimeout();
-  //       console.log("Response status:", response.status);
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json().catch(() => ({}));
-  //         console.log("Upload error response:", errorData);
-  //         throw new Error(
-  //           errorData.message || `Upload failed with status ${response.status}`
-  //         );
-  //       }
-
-  //       const data = await response.json();
-  //       const uploadedUrl = data?.url || data?.profilePicture || preview;
-
-  //       console.log("Upload successful. Image URL:", uploadedUrl);
-
-  //       onUpload?.(uploadedUrl);
-  //       setImage(null);
-  //       setCurrentScreen(SCREENS.CONFIRMATION);
-  //     } catch (error: any) {
-  //       console.error("Upload error:", error);
-  //       const errorMessage =
-  //         error.message || "Upload failed. Please try again.";
-  //       setUploadError(errorMessage);
-  //       Alert.alert("Upload Failed", errorMessage);
-  //     } finally {
-  //       setUploading(false);
-  //       clearUploadTimeout();
-  //     }
-  //   },
-  //   [image, preview, onUpload, clearUploadTimeout, setUploading, setUploadError]
-  // );
-
   // Navigation handlers
   const handleContinue = useCallback(() => {
     if (onContinue) {
@@ -573,14 +223,26 @@ export default function ProfilePicUploader({
     };
 
     setImage(cameraImage);
-    setPreview(uri);
-    setCurrentScreen(SCREENS.PREVIEW);
+    // setPreview(uri);
+    // setCurrentScreen(SCREENS.PREVIEW);
+    uploadImage(cameraImage);
   }, []);
 
-  const removeImage = useCallback(() => {
-    setImage(null);
-    setPreview(DEFAULT_AVATAR);
-    setUploadError(null);
+  const handleGallerySelect = useCallback((uri: string) => {
+    const selectedImage: ImagePicker.ImagePickerAsset = {
+      uri,
+      width: 0,
+      height: 0,
+      assetId: null,
+      fileName: `gallery_${Date.now()}.jpg`,
+      fileSize: 0,
+      type: "image",
+      mimeType: "image/jpeg",
+    };
+
+    setImage(selectedImage);
+    setPreview(uri);
+    setCurrentScreen(SCREENS.PREVIEW);
   }, []);
 
   // Screen Components
@@ -654,7 +316,7 @@ export default function ProfilePicUploader({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.previewContent}>
-          <Text style={styles.title}>GIANTOGRAM</Text>
+          {/* <Text style={styles.title}>GIANTOGRAM</Text> */}
 
           <View style={styles.avatarContainer}>
             <Image source={{ uri: preview }} style={styles.avatar} />
@@ -747,7 +409,8 @@ export default function ProfilePicUploader({
 
         <TouchableOpacity
           style={styles.popupButton}
-          onPress={() => pickImageFromSource(false)}
+          // onPress={() => pickImageFromSource(false)}
+          onPress={() => handleScreenChange(SCREENS.CUSTOM_GALLERY)}
           accessibilityLabel="Choose from gallery"
           accessibilityRole="button"
         >
@@ -784,6 +447,13 @@ export default function ProfilePicUploader({
         return <PreviewScreen />;
       case SCREENS.CONFIRMATION:
         return <ConfirmationScreen />;
+      case SCREENS.CUSTOM_GALLERY:
+        return (
+          <CustomGalleryScreen
+            onSelect={handleGallerySelect}
+            onBack={() => handleScreenChange(SCREENS.POPUP)}
+          />
+        );
       default:
         return <WelcomeScreen />;
     }
@@ -792,14 +462,6 @@ export default function ProfilePicUploader({
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       {renderCurrentScreen()}
-
-      {/* Navigation indicator - only show on certain screens */}
-      {/* {(currentScreen === SCREENS.WELCOME ||
-        currentScreen === SCREENS.CONFIRMATION) && (
-        <View style={styles.indicatorContainer}>
-          <View style={styles.indicator} />
-        </View>
-      )} */}
     </SafeAreaView>
   );
 }
@@ -955,7 +617,7 @@ const styles = StyleSheet.create({
   popupContainer: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "#0D0D0D",
     paddingHorizontal: 24,
   },
   popupContent: {
@@ -996,11 +658,5 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: "50%",
     transform: [{ translateX: -64 }],
-  },
-  indicator: {
-    width: 128,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
 });

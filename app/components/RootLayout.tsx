@@ -201,12 +201,8 @@ export default function RootLayout() {
   }
 
   return (
-    // <AuthProvider>
     <SafeAreaProvider>
-      <SafeAreaView
-        edges={["top", "left", "right", "bottom"]}
-        style={styles.safeArea}
-      >
+      <SafeAreaView edges={["top", "left", "right", "bottom"]} style={styles.safeArea}>
         <StatusBar style="light" backgroundColor="#000" />
         <View style={styles.flex}>
           <Stack>
