@@ -17,13 +17,10 @@ import {
 
 import Toast from "react-native-toast-message";
 import { useAuth } from "./components/auth-context";
+import { baseUrl } from "./config/config";
 
 const Home = () => {
   const router = useRouter();
-  // const baseUrl = "https://next-node-auth.onrender.com";
-  const baseUrl = "http://localhost:2001";
-
-  // const baseUrl = 'http://localhost:2001'
 
   const [showModal, setShowModal] = useState(false);
   const [isDeactivated, setIsDeactivated] = useState<boolean | null>(null);
@@ -34,7 +31,7 @@ const Home = () => {
   const [userEmail, setUserEmail] = useState<string>("");
   const [username, setUserName] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const {accessToken, email, mobile} = useAuth()
+  const { accessToken, email, mobile } = useAuth();
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
 
@@ -86,11 +83,8 @@ const Home = () => {
 
   const fetchUserData = async () => {
     try {
-      // const token = await AsyncStorage.getItem("userToken");
-      // const email = await AsyncStorage.getItem("userEmail");
+      const token = accessToken;
 
-      const token = accessToken
-      
       if (!token) {
         showToast("error", "No token found, please login.");
         router.replace("/login");

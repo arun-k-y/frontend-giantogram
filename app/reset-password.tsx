@@ -16,6 +16,8 @@ import {
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
 import { baseUrl } from "./config/config";
+import { ErrorPopup } from "./components/ErrorPopup";
+import useErrorMessage from "./hooks/useErrorMessage";
 
 export default function ResetPassword() {
   const { identifier, username } = useLocalSearchParams();
@@ -23,21 +25,17 @@ export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-
+  const { errorMessage, showError, dismissError, slideAnim } =
+    useErrorMessage();
   // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
     resetCode: false,
     newPassword: false,
     confirmPassword: false,
   });
-
-  // const baseUrl = "http://localhost:2001"; // Change to your actual base URL
-  // const baseUrl = "https://next-node-auth.onrender.com"; // For production
-  // const baseUrl = 'http://localhost:2001'
 
   const validateInputs = () => {
     const errors = {
@@ -51,28 +49,28 @@ export default function ResetPassword() {
 
     if (errors.resetCode) {
       if (!resetCode.trim()) {
-        setErrorMessage("Reset code is required");
+        showError("Enter OTP");
       } else {
-        setErrorMessage("Reset code must be 6 digits");
+        showError("Enter Valid OTP");
       }
       return false;
     }
 
     if (errors.newPassword) {
       if (!newPassword.trim()) {
-        setErrorMessage("New password is required");
+        showError("Enter Password");
       } else if (newPassword.length < 8) {
-        setErrorMessage("Password must be at least 8 characters");
+        showError("Password must be at least 8 characters");
       }
       return false;
     }
 
     if (errors.confirmPassword) {
-      if (!confirmPassword.trim()) {
-        setErrorMessage("Please confirm your password");
-      } else {
-        setErrorMessage("Passwords do not match");
-      }
+      // if (!confirmPassword.trim()) {
+      //   showError("Please confirm your password");
+      // } else {
+      showError("Password Doesn't Match");
+      // }
       return false;
     }
 
@@ -81,13 +79,13 @@ export default function ResetPassword() {
 
   const clearFieldError = (fieldName: string) => {
     setFieldErrors((prev) => ({ ...prev, [fieldName]: false }));
-    setErrorMessage("");
+    // setErrorMessage("");
   };
 
   const handleResetPassword = async () => {
     Keyboard.dismiss();
 
-    setErrorMessage("");
+    // setErrorMessage("");
 
     if (!validateInputs()) return;
 
@@ -120,7 +118,7 @@ export default function ResetPassword() {
         // Navigate back to login
         router.replace("/login");
       } else {
-        setErrorMessage(data.message || "Failed to reset password");
+        showError(data.message || "Failed to reset password");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -129,11 +127,9 @@ export default function ResetPassword() {
         error.message.includes("Network request failed")
       ) {
         console.log("Network error. Please check your internet connection.");
-        setErrorMessage(
-          "Network error. Please check your internet connection."
-        );
+        showError("Network error. Please check your internet connection.");
       } else {
-        setErrorMessage("An error occurred. Please try again.");
+        showError("An error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -173,7 +169,7 @@ export default function ResetPassword() {
           <TextInput
             style={{ fontSize: 18 }}
             className={`w-full  rounded-[10px] py-5 px-5 pr-14 ${
-              fieldErrors.newPassword
+              fieldErrors.newPassword || fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
@@ -182,10 +178,11 @@ export default function ResetPassword() {
             onChangeText={(password) => {
               setNewPassword(password);
               clearFieldError("newPassword");
+              clearFieldError("confirmPassword");
               // Clear confirm password error if passwords now match
-              if (confirmPassword && password === confirmPassword) {
-                clearFieldError("confirmPassword");
-              }
+              // if (confirmPassword && password === confirmPassword) {
+              //   clearFieldError("confirmPassword");
+              // }
             }}
             secureTextEntry={!isPasswordVisible}
             textContentType="newPassword"
@@ -209,7 +206,7 @@ export default function ResetPassword() {
           <TextInput
             style={{ fontSize: 18 }}
             className={`w-full   rounded-[10px] py-5 px-5 pr-14 ${
-              fieldErrors.confirmPassword
+              fieldErrors.newPassword || fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
@@ -217,11 +214,12 @@ export default function ResetPassword() {
             value={confirmPassword}
             onChangeText={(password) => {
               setConfirmPassword(password);
+              clearFieldError("newPassword");
               clearFieldError("confirmPassword");
               // Clear error if passwords now match
-              if (newPassword && password === newPassword) {
-                clearFieldError("confirmPassword");
-              }
+              // if (newPassword && password === newPassword) {
+              //   clearFieldError("confirmPassword");
+              // }
             }}
             secureTextEntry={!isConfirmPasswordVisible}
             textContentType="newPassword"
@@ -271,7 +269,7 @@ export default function ResetPassword() {
           </TouchableOpacity>
         </View> */}
 
-        {errorMessage !== "" && (
+        {/* {errorMessage !== "" && (
           <View className="absolute bottom-0 w-full">
             <View className=" py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
@@ -279,7 +277,7 @@ export default function ResetPassword() {
               </Text>
             </View>
           </View>
-        )}
+        )} */}
       </View>
     );
   };
@@ -316,6 +314,16 @@ export default function ResetPassword() {
               </ScrollView>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
+        </>
+      )}
+
+      {errorMessage && (
+        <>
+          <ErrorPopup
+            errorMessage={errorMessage}
+            slideAnim={slideAnim}
+            onDismiss={dismissError}
+          />
         </>
       )}
     </>

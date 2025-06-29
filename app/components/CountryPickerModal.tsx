@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  StatusBar,
   Platform,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
@@ -49,10 +48,6 @@ export const CountryPickerModal = ({
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <SafeAreaView className="flex-1 bg-black/50 pt-28">
-        {Platform.OS === "android" && (
-          <StatusBar barStyle="light-content" backgroundColor="#000" />
-        )}
-
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}

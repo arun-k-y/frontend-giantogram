@@ -8,11 +8,8 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { useAuth } from "./components/auth-context";
 import { baseUrl } from "./config/config";
-
-// const baseUrl = "http://localhost:2001";
 
 export default function RecoveryMethods() {
   const [emails, setEmails] = useState<string[]>([]);
@@ -20,12 +17,11 @@ export default function RecoveryMethods() {
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const {accessToken} = useAuth()
+  const { accessToken } = useAuth();
 
   useEffect(() => {
     (async () => {
-      const token = accessToken
+      const token = accessToken;
       const res = await fetch(`${baseUrl}/api/auth/recovery`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -39,7 +35,7 @@ export default function RecoveryMethods() {
   }, []);
 
   const handleAdd = async (type: "email" | "phone") => {
-    const token = accessToken
+    const token = accessToken;
     setLoading(true);
 
     const payload =

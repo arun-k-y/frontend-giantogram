@@ -15,12 +15,15 @@ import Toast from "react-native-toast-message";
 import EmailOrPhoneInput from "./components/EmailOrPhoneInput";
 import BackButton from "./components/BackButton";
 import { baseUrl } from "./config/config";
+import { ErrorPopup } from "./components/ErrorPopup";
+import useErrorMessage from "./hooks/useErrorMessage";
 
 export default function ForgotPassword() {
   const [identifier, setIdentifier] = useState(""); // Changed from email to identifier
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [fieldError, setFieldError] = useState(false); // Changed from hasEmailError to fieldError
+  const { errorMessage, showError, dismissError, slideAnim } =
+    useErrorMessage();
 
   // Added missing state variables for country code functionality
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
@@ -49,19 +52,26 @@ export default function ForgotPassword() {
 
   const handleForgotPassword = async () => {
     Keyboard.dismiss();
+    const trimmedIdentifier = identifier.trim();
 
-    setErrorMessage("");
+    // setErrorMessage("");
 
-    if (!identifier.trim()) {
-      setErrorMessage("Email or phone number is required");
+    if (!trimmedIdentifier) {
+      showError("Enter Username, Email or Number");
       setFieldError(true);
       return;
     }
 
-    const identifierType = getIdentifierType(identifier.trim());
+    const identifierType = getIdentifierType(trimmedIdentifier);
 
     if (!identifierType) {
-      setErrorMessage("Email, phone number, or username is required");
+      let message = "Enter a Valid Username, Email or Number";
+      if (trimmedIdentifier.includes("@")) {
+        message = "Enter a Valid Gmail";
+      } else if (/^\d+$/.test(trimmedIdentifier)) {
+        message = "Enter a Valid Number";
+      }
+      showError(message);
 
       setFieldError(true);
       return;
@@ -69,10 +79,10 @@ export default function ForgotPassword() {
 
     setIsLoading(true);
     try {
-      console.log("Attempting to send reset code to:", {
-        identifier,
-        type: identifierType,
-      });
+      // console.log("Attempting to send reset code to:", {
+      //   identifier,
+      //   type: identifierType,
+      // });
 
       let id = identifier.trim();
       if (identifierType === "mobile") {
@@ -149,7 +159,7 @@ export default function ForgotPassword() {
           });
         }
       } else {
-        setErrorMessage(data.message || "Failed to send reset code");
+        showError(data.message || "Failed to send reset code");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -158,11 +168,9 @@ export default function ForgotPassword() {
         error.message.includes("Network request failed")
       ) {
         console.log("Network error. Please check your internet connection.");
-        setErrorMessage(
-          "Network error. Please check your internet connection."
-        );
+        showError("Network error. Please check your internet connection.");
       } else {
-        setErrorMessage("An error occurred. Please try again.");
+        showError("An error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -186,7 +194,7 @@ export default function ForgotPassword() {
           onChange={(value) => {
             setIdentifier(value);
             setFieldError(false);
-            setErrorMessage("");
+            // setErrorMessage("");
           }}
           fieldError={fieldError}
           selectedCountryCode={selectedCountryCode}
@@ -220,7 +228,7 @@ export default function ForgotPassword() {
           </TouchableOpacity>
         </View> */}
 
-        {errorMessage !== "" && (
+        {/* {errorMessage !== "" && (
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
@@ -228,7 +236,7 @@ export default function ForgotPassword() {
               </Text>
             </View>
           </View>
-        )}
+        )} */}
       </View>
     );
   };
@@ -269,6 +277,15 @@ export default function ForgotPassword() {
               </ScrollView>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
+        </>
+      )}
+      {errorMessage && (
+        <>
+          <ErrorPopup
+            errorMessage={errorMessage}
+            slideAnim={slideAnim}
+            onDismiss={dismissError}
+          />
         </>
       )}
     </>

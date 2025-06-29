@@ -16,17 +16,20 @@ import {
 import BackButton from "./components/BackButton";
 import { useAuth } from "./components/auth-context";
 import { baseUrl } from "./config/config";
+import useErrorMessage from "./hooks/useErrorMessage";
+import { ErrorPopup } from "./components/ErrorPopup";
 
 export default function SetPassword() {
   const { identifier } = useLocalSearchParams();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
   const { accessToken } = useAuth();
+  const { errorMessage, showError, dismissError, slideAnim } =
+    useErrorMessage();
 
   // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
@@ -45,19 +48,19 @@ export default function SetPassword() {
 
     if (errors.newPassword) {
       if (!newPassword.trim()) {
-        setErrorMessage("New password is required");
-      } else if(newPassword.length<8) {
-        setErrorMessage("Password must be at least 8 characters");
+        showError("Create New Password");
+      } else if (newPassword.length < 8) {
+        showError("Password must be at least 8 characters");
       }
       return false;
     }
 
     if (errors.confirmPassword) {
-      if (!confirmPassword.trim()) {
-        setErrorMessage("Please confirm your password");
-      } else {
-        setErrorMessage("Passwords do not match");
-      }
+      // if (!confirmPassword.trim()) {
+      //   showError("Please confirm your password");
+      // } else {
+      showError("Password Doesn't Match");
+      // }
       return false;
     }
 
@@ -66,13 +69,13 @@ export default function SetPassword() {
 
   const clearFieldError = (fieldName: string) => {
     setFieldErrors((prev) => ({ ...prev, [fieldName]: false }));
-    setErrorMessage("");
+    // setErrorMessage("");
   };
 
   const handleSetPassword = async () => {
     Keyboard.dismiss();
 
-    setErrorMessage("");
+    // setErrorMessage("");
 
     if (!validateInputs()) return;
 
@@ -112,7 +115,7 @@ export default function SetPassword() {
           router.replace("/home2");
         }
       } else {
-        setErrorMessage(data.message || "Failed to set password");
+        showError(data.message || "Failed to set password");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -121,11 +124,9 @@ export default function SetPassword() {
         error.message.includes("Network request failed")
       ) {
         console.log("Network error. Please check your internet connection.");
-        setErrorMessage(
-          "Network error. Please check your internet connection."
-        );
+        showError("Network error. Please check your internet connection.");
       } else {
-        setErrorMessage("An error occurred. Please try again.");
+        showError("An error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -145,7 +146,7 @@ export default function SetPassword() {
           <TextInput
             style={{ fontSize: 18 }}
             className={`w-full rounded-[10px] py-5 px-5 pr-14 ${
-              fieldErrors.newPassword
+              fieldErrors.newPassword || fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
@@ -154,10 +155,10 @@ export default function SetPassword() {
             onChangeText={(password) => {
               setNewPassword(password);
               clearFieldError("newPassword");
-              // Clear confirm password error if passwords now match
-              if (confirmPassword && password === confirmPassword) {
-                clearFieldError("confirmPassword");
-              }
+              clearFieldError("confirmPassword"); // Clear confirm password error if passwords now match
+              // if (confirmPassword && password === confirmPassword) {
+              //   clearFieldError("confirmPassword");
+              // }
             }}
             secureTextEntry={!isPasswordVisible}
             textContentType="newPassword"
@@ -181,7 +182,7 @@ export default function SetPassword() {
           <TextInput
             style={{ fontSize: 18 }}
             className={`w-full  rounded-[10px] py-5 px-5 pr-14 ${
-              fieldErrors.confirmPassword
+              fieldErrors.newPassword || fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
                 : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
             }`}
@@ -189,11 +190,12 @@ export default function SetPassword() {
             value={confirmPassword}
             onChangeText={(password) => {
               setConfirmPassword(password);
+              clearFieldError("newPassword");
               clearFieldError("confirmPassword");
               // Clear error if passwords now match
-              if (newPassword && password === newPassword) {
-                clearFieldError("confirmPassword");
-              }
+              // if (newPassword && password === newPassword) {
+              //   clearFieldError("confirmPassword");
+              // }
             }}
             secureTextEntry={!isConfirmPasswordVisible}
             textContentType="newPassword"
@@ -243,7 +245,7 @@ export default function SetPassword() {
           </TouchableOpacity>
         </View> */}
 
-        {errorMessage !== "" && (
+        {/* {errorMessage !== "" && (
           <View className="absolute bottom-0 w-full">
             <View className=" py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
@@ -251,7 +253,7 @@ export default function SetPassword() {
               </Text>
             </View>
           </View>
-        )}
+        )} */}
       </View>
     );
   };
@@ -288,6 +290,15 @@ export default function SetPassword() {
               </ScrollView>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
+        </>
+      )}
+      {errorMessage && (
+        <>
+          <ErrorPopup
+            errorMessage={errorMessage}
+            slideAnim={slideAnim}
+            onDismiss={dismissError}
+          />
         </>
       )}
     </>

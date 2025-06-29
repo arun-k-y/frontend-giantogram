@@ -376,18 +376,18 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
-import { useAuth } from "./components/auth-context";
 import DeactivatedAccountModal from "./components/DeactivatedAccountModal";
 import { baseUrl } from "./config/config";
+import { ErrorPopup } from "./components/ErrorPopup";
+import useErrorMessage from "./hooks/useErrorMessage";
 
 export default function Verify2FA() {
-  const { accessToken, email, mobile, isDeactivated } = useAuth();
-
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(59);
+  const { errorMessage, showError, dismissError, slideAnim } =
+    useErrorMessage();
 
   // States for deactivated account modal
   const [showDeactivatedModal, setShowDeactivatedModal] = useState(false);
@@ -415,16 +415,16 @@ export default function Verify2FA() {
   const verify2FA = async () => {
     Keyboard.dismiss();
     setIsLoading(true);
-    setErrorMessage("");
+    // setErrorMessage("");
 
     if (!otp.trim()) {
-      setErrorMessage("Please enter the verification code");
+      showError("Please enter the verification code");
       setIsLoading(false);
       return;
     }
 
     if (otp.trim().length !== 6) {
-      setErrorMessage("Please enter a valid 6-digit code");
+      showError("Please enter a valid 6-digit code");
       setIsLoading(false);
       return;
     }
@@ -472,27 +472,25 @@ export default function Verify2FA() {
         // Handle specific error codes
         switch (result.code) {
           case "MISSING_FIELDS":
-            setErrorMessage("Please enter the verification code");
+            showError("Please enter the verification code");
             break;
           case "INVALID_CODE":
           case 400: // Handle numeric code as well
-            setErrorMessage("Invalid verification code. Please try again.");
+            showError("Invalid verification code. Please try again.");
             break;
           case "CODE_EXPIRED":
-            setErrorMessage(
+            showError(
               "Verification code has expired. Please request a new one."
             );
             break;
           case "USER_NOT_FOUND":
-            setErrorMessage("Session expired. Please login again.");
+            showError("Session expired. Please login again.");
             break;
           case "MAX_ATTEMPTS_EXCEEDED":
-            setErrorMessage("Too many incorrect attempts. Please login again.");
+            showError("Too many incorrect attempts. Please login again.");
             break;
           default:
-            setErrorMessage(
-              result.message || "Invalid code. Please try again."
-            );
+            showError(result.message || "Invalid code. Please try again.");
         }
       }
     } catch (error) {
@@ -501,9 +499,9 @@ export default function Verify2FA() {
         error instanceof TypeError &&
         error.message.includes("Network request failed")
       ) {
-        setErrorMessage("Network error. Please check your connection.");
+        showError("Network error. Please check your connection.");
       } else {
-        setErrorMessage("Something went wrong. Please try again.");
+        showError("Something went wrong. Please try again.");
       }
     }
 
@@ -515,11 +513,13 @@ export default function Verify2FA() {
     setDeactivatedUserData(null);
     // Clear OTP and show message
     setOtp("");
-    Toast.show({
-      type: "info",
-      text1: "Login cancelled",
-      text2: "Please contact support if you need help",
-    });
+    // Toast.show({
+    //   type: "info",
+    //   text1: "Login cancelled",
+    //   text2: "Please contact support if you need help",
+    // });
+
+    router.replace("/login")
   };
 
   const handleReactivateAccount = async () => {
@@ -583,7 +583,7 @@ export default function Verify2FA() {
     if (countdown > 0) return; // Prevent resend during countdown
 
     setIsResending(true);
-    setErrorMessage("");
+    // setErrorMessage("");
 
     try {
       const response = await fetch(`${baseUrl}/api/auth/resend-2fa`, {
@@ -609,24 +609,8 @@ export default function Verify2FA() {
         setOtp(""); // Clear existing OTP
       } else {
         // Handle specific error codes
-        switch (result.code) {
-          case "TOO_EARLY":
-            setErrorMessage("Please wait before requesting a new code");
-            break;
-          case "USER_NOT_FOUND":
-            setErrorMessage("Session expired. Please login again.");
-            break;
-          case "EMAIL_NOT_AVAILABLE":
-            setErrorMessage("Email not available for verification");
-            break;
-          case "MOBILE_NOT_AVAILABLE":
-            setErrorMessage("Mobile number not available for verification");
-            break;
-          case "DELIVERY_ERROR":
-            setErrorMessage("Failed to send code. Please try again.");
-            break;
-          default:
-            setErrorMessage(result.message || "Failed to resend code");
+        if (result?.code) {
+          showError(result.message || "Failed to resend code");
         }
       }
     } catch (error) {
@@ -635,9 +619,9 @@ export default function Verify2FA() {
         error instanceof TypeError &&
         error.message.includes("Network request failed")
       ) {
-        setErrorMessage("Network error. Please check your connection.");
+        showError("Network error. Please check your connection.");
       } else {
-        setErrorMessage("Failed to resend code. Please try again.");
+        showError("Failed to resend code. Please try again.");
       }
     }
 
@@ -681,7 +665,7 @@ export default function Verify2FA() {
               // Only allow numbers and limit to 6 digits
               const numericText = text.replace(/[^0-9]/g, "").slice(0, 6);
               setOtp(numericText);
-              if (errorMessage) setErrorMessage(""); // Clear error when typing
+              // if (errorMessage) setErrorMessage(""); // Clear error when typing
             }}
             keyboardType="numeric"
             maxLength={6}
@@ -734,7 +718,7 @@ export default function Verify2FA() {
         </View>
 
         {/* Error Message */}
-        {errorMessage !== "" && (
+        {/* {errorMessage !== "" && (
           <View className="absolute bottom-0 w-full">
             <View className="py-5">
               <Text className="text-[#F11111] text-xl px-2 text-center font-normal">
@@ -742,7 +726,7 @@ export default function Verify2FA() {
               </Text>
             </View>
           </View>
-        )}
+        )} */}
       </View>
     );
   };
@@ -788,6 +772,16 @@ export default function Verify2FA() {
           deactivatedUserData?.user?.email
         }
       />
+
+      {errorMessage && (
+        <>
+          <ErrorPopup
+            errorMessage={errorMessage}
+            slideAnim={slideAnim}
+            onDismiss={dismissError}
+          />
+        </>
+      )}
     </>
   );
 }

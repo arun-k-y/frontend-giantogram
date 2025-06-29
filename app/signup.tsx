@@ -19,6 +19,7 @@ import BackButton from "./components/BackButton";
 import useErrorMessage from "./hooks/useErrorMessage";
 import { ErrorPopup } from "./components/ErrorPopup";
 import { baseUrl } from "./config/config";
+import EmailOrPhoneInput from "./components/EmailOrPhoneInput";
 
 // Conditional import for native platforms only
 let DateTimePicker: any = null;
@@ -446,7 +447,7 @@ export default function SignUp() {
         style={{ fontSize: 18 }}
       />
 
-      <View className="w-full mb-4 relative">
+      {/* <View className="w-full mb-4 relative">
         <View className="flex-row">
           {isMobileInput && (
             <TouchableOpacity
@@ -488,21 +489,22 @@ export default function SignUp() {
             style={{ fontSize: 18 }}
           />
         </View>
+      </View> */}
 
-        {/* {showCountryCodeDropdown && (
-          // <View className="absolute w-20 z-10">
-            <CountryPickerModal
-              visible={showCountryCodeDropdown}
-              onClose={() => setShowCountryCodeDropdown(false)}
-              onSelect={(code) => {
-                setSelectedCountryCode(code);
-                setShowCountryCodeDropdown(false);
-              }}
-              countryOptions={countryCodeOptions}
-            />
-          // </View>
-        )} */}
-      </View>
+      <EmailOrPhoneInput
+        identifier={emailOrMobile}
+        onChange={(value) => {
+          setEmailOrMobile(value);
+          clearFieldError("emailOrMobile");
+        }}
+        fieldError={fieldErrors.emailOrMobile}
+        selectedCountryCode={selectedCountryCode}
+        setSelectedCountryCode={setSelectedCountryCode}
+        showDropdown={showCountryCodeDropdown}
+        setShowDropdown={setShowCountryCodeDropdown}
+        placeholder="Email or Mobile Number"
+        style="mb-4"
+      />
 
       <TextInput
         className={getInputStyle(fieldErrors.username) + " mb-4"}

@@ -500,16 +500,7 @@ export default function ProfilePicUploader({
               </Text>
             </TouchableOpacity>
 
-            {/* <TouchableOpacity
-              className="py-3 mt-2"
-              onPress={onClose}
-              accessibilityLabel="Cancel"
-              accessibilityRole="button"
-            >
-              <Text className="text-gray-500 text-center text-base">
-                Cancel
-              </Text>
-            </TouchableOpacity> */}
+           
           </View>
         </View>
       </Modal>
@@ -523,6 +514,7 @@ export default function ProfilePicUploader({
       case SCREENS.CAMERA:
         return (
           <CustomCamera
+          uploadState={uploadState}
             onPhotoTaken={handleCameraPhoto}
             onClose={() => handleScreenChange(SCREENS.WELCOME)}
           />

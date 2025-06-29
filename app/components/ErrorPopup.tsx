@@ -1,11 +1,5 @@
-// components/ErrorPopup.tsx
 import React from "react";
-import {
-  Animated,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
 import { ErrorMessage } from "../hooks/useErrorMessage";
 
 type Props = {

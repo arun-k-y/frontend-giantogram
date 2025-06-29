@@ -13,7 +13,6 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Vibration,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -82,7 +81,7 @@ export default function Login() {
     // Show error message and vibrate
     if (!trimmedIdentifier && !trimmedPassword) {
       showError("Enters Details to Login");
-      Vibration.vibrate(100);
+      // Vibration.vibrate(100);
       return false;
     }
 
@@ -98,13 +97,13 @@ export default function Login() {
       }
 
       showError(message);
-      Vibration.vibrate(100);
+      // Vibration.vibrate(100);
       return false;
     }
 
     if (!trimmedPassword) {
       showError("Enter Password");
-      Vibration.vibrate(100);
+      // Vibration.vibrate(100);
       return false;
     }
 
@@ -145,7 +144,7 @@ export default function Login() {
       });
 
       const data = await response.json();
-
+      console.log("datadata.....", data)
       if (response.ok) {
         Toast.show({
           type: "success",
@@ -193,7 +192,7 @@ export default function Login() {
         }
 
         showError(message);
-        Vibration.vibrate(100); // Notify user with haptic feedback
+        // Vibration.vibrate(100); // Notify user with haptic feedback
       }
     } catch (error) {
       console.error("Error:", error);
@@ -207,7 +206,7 @@ export default function Login() {
         showError("An error occurred. Please try again.");
       }
 
-      Vibration.vibrate(100);
+      // Vibration.vibrate(100);
     } finally {
       setIsLoading(false);
     }

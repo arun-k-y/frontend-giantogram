@@ -466,6 +466,7 @@ import {
   Alert,
   SafeAreaView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
@@ -480,6 +481,7 @@ const CAPTURE_QUALITY = 0.8;
 
 // Types
 interface CustomCameraProps {
+  uploadState?: any;
   onPhotoTaken?: (uri: string) => void;
   onClose?: () => void;
 }
@@ -494,6 +496,7 @@ interface CameraState {
 }
 
 const CustomCamera: React.FC<CustomCameraProps> = ({
+  uploadState,
   onPhotoTaken,
   onClose,
 }) => {
@@ -626,8 +629,13 @@ const CustomCamera: React.FC<CustomCameraProps> = ({
               onPress={() => {
                 onPhotoTaken?.(photoUri);
               }}
+              disabled={uploadState?.isUploading}
             >
-              <Text style={styles.previewButtonText}>Set as Profile</Text>
+              {uploadState?.isUploading ? (
+                <ActivityIndicator size={24} color="#000000" />
+              ) : (
+                <Text style={styles.previewButtonText}>Set as Profile</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.previewButton}

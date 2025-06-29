@@ -23,7 +23,6 @@ export default function RootLayout() {
   const pathname = usePathname();
   const { accessToken, isReady } = useAuth();
 
-
   const screenOptions = {
     headerTitle: () => <Text style={styles.headerTitle}>GIANTOGRAM</Text>,
     headerStyle: {
@@ -201,7 +200,10 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView edges={["top", "left", "right", "bottom"]} style={styles.safeArea}>
+      <SafeAreaView
+        edges={["top", "left", "right", "bottom"]}
+        style={styles.safeArea}
+      >
         <StatusBar style="light" backgroundColor="#000" />
         <View style={styles.flex}>
           <Stack>
@@ -217,7 +219,7 @@ export default function RootLayout() {
               "recovery-methods",
               "choose-recovery",
               "remember-me",
-              "choose-account"
+              "choose-account",
             ].map((name) => (
               <Stack.Screen
                 key={name}
@@ -259,7 +261,6 @@ export default function RootLayout() {
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
-    // </AuthProvider>
   );
 }
 

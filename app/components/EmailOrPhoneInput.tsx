@@ -23,6 +23,7 @@ interface EmailOrPhoneInputProps {
   showDropdown: boolean;
   setShowDropdown: (show: boolean) => void;
   placeholder?: string;
+  style?: string
 }
 
 const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
@@ -34,6 +35,7 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
   showDropdown,
   setShowDropdown,
   placeholder = "Email or Phone Number",
+  style="mb-12"
 }) => {
   const trimmedIdentifier = identifier.trim();
   const identifierType = getIdentifierType(trimmedIdentifier);
@@ -42,7 +44,7 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
     (/^\d+$/.test(trimmedIdentifier) && trimmedIdentifier !== "");
 
   return (
-    <View className="flex-row w-full mb-12 relative">
+    <View className={`flex-row w-full mb-12 relative ${style}`}>
       {isMobileInput && (
         <TouchableOpacity
           onPress={() => setShowDropdown(!showDropdown)}
@@ -69,7 +71,62 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
         } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
         placeholder={placeholder}
         value={identifier}
-        onChangeText={onChange}
+        // onChangeText={onChange}
+        //      onChangeText={(text) => {
+        //   const trimmedText = text.trim();
+
+        //   if (trimmedText.startsWith("+")) {
+        //     // Try to find the longest matching code
+        //     const sortedOptions = [...countryCodeOptions].sort(
+        //       (a, b) => b.code.length - a.code.length
+        //     );
+        //     const matched = sortedOptions.find((c) =>
+        //       trimmedText.startsWith(c.code)
+        //     );
+
+        //     if (matched) {
+        //       setSelectedCountryCode(matched.code);
+
+        //       const mobileNumber = trimmedText.slice(matched.code.length);
+        //       onChange(mobileNumber.replace(/\D/g, "")); // Strip non-numeric
+        //       return;
+        //     }
+        //   }
+
+        //   // Default
+        //   onChange(trimmedText.replace(/\s/g, ""));
+        // }}
+
+        onChangeText={(text) => {
+          const trimmedText = text.trim();
+
+          if (trimmedText.startsWith("+")) {
+            // Sort for longest match
+            const sortedOptions = [...countryCodeOptions].sort(
+              (a, b) => b.code.length - a.code.length
+            );
+            const matched = sortedOptions.find((c) =>
+              trimmedText.startsWith(c.code)
+            );
+
+            if (matched) {
+              const afterCode = trimmedText.slice(matched.code.length);
+
+              // Only update if number is entered after code
+              if (afterCode.length > 0) {
+                setSelectedCountryCode(matched.code);
+                onChange(afterCode.replace(/\D/g, ""));
+                return;
+              }
+
+              // If just typing cod2e like "+91", preserve it
+              onChange(trimmedText);
+              return;
+            }
+          }
+
+          onChange(trimmedText.replace(/\s/g, ""));
+        }}
         keyboardType="default"
         autoCapitalize="none"
         placeholderTextColor="#555"
