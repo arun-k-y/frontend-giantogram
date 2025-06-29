@@ -286,8 +286,7 @@ export default function Login() {
 
           <TouchableOpacity
             className="bg-white py-2 px-2 rounded-lg"
-            // onPress={() => router.push("/deactivated")}
-            onPress={() => router.push("/profile-pic")}
+            onPress={() => router.push("/forgot-password")}
           >
             <Text className="text-[#332E2E] font-normal">Forgot Password?</Text>
           </TouchableOpacity>

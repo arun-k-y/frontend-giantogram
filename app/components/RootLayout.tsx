@@ -15,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { toastConfig } from "../utils/ToastDesign";
 import "../../global.css";
 import { useAuth } from "./auth-context";
+import { baseUrl } from "../config/config";
 
 export default function RootLayout() {
   const [isChecking, setIsChecking] = useState(true);
@@ -22,8 +23,6 @@ export default function RootLayout() {
   const pathname = usePathname();
   const { accessToken, isReady } = useAuth();
 
-  // const baseUrl = "http://localhost:2001";
-  const baseUrl = "http://localhost:2001";
 
   const screenOptions = {
     headerTitle: () => <Text style={styles.headerTitle}>GIANTOGRAM</Text>,
@@ -77,7 +76,7 @@ export default function RootLayout() {
             }
           } else {
             console.log("🚫 Invalid token. Removing from AsyncStorage...");
-            await AsyncStorage.removeItem("userToken");
+            // await AsyncStorage.removeItem("userToken");
             if (pathname !== "/login") {
               console.log("➡️ Redirecting to /login...");
               router.replace("/login");
@@ -218,6 +217,7 @@ export default function RootLayout() {
               "recovery-methods",
               "choose-recovery",
               "remember-me",
+              "choose-account"
             ].map((name) => (
               <Stack.Screen
                 key={name}

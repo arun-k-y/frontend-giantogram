@@ -61,8 +61,8 @@ export default function ResetPassword() {
     if (errors.newPassword) {
       if (!newPassword.trim()) {
         setErrorMessage("New password is required");
-      } else {
-        setErrorMessage("Password must be at least 6 characters");
+      } else if (newPassword.length < 8) {
+        setErrorMessage("Password must be at least 8 characters");
       }
       return false;
     }
@@ -150,8 +150,7 @@ export default function ResetPassword() {
         </View>
 
         <TextInput
-                style={{ fontSize: 18 }}
-
+          style={{ fontSize: 18 }}
           className={`w-full rounded-[10px] py-5 px-5 mb-6 text-start ${
             fieldErrors.resetCode
               ? "bg-white border text-[#F11111] border-[#FF6B6B]"
@@ -172,8 +171,7 @@ export default function ResetPassword() {
 
         <View className="w-full mb-6 relative">
           <TextInput
-                  style={{ fontSize: 18 }}
-
+            style={{ fontSize: 18 }}
             className={`w-full  rounded-[10px] py-5 px-5 pr-14 ${
               fieldErrors.newPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
@@ -209,8 +207,7 @@ export default function ResetPassword() {
 
         <View className="w-full mb-12 relative">
           <TextInput
-                  style={{ fontSize: 18 }}
-
+            style={{ fontSize: 18 }}
             className={`w-full   rounded-[10px] py-5 px-5 pr-14 ${
               fieldErrors.confirmPassword
                 ? "bg-white border text-[#F11111] border-[#FF6B6B]"
@@ -278,7 +275,7 @@ export default function ResetPassword() {
           <View className="absolute bottom-0 w-full">
             <View className=" py-5">
               <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
-            {`[ ${errorMessage} ]`}
+                {`[ ${errorMessage} ]`}
               </Text>
             </View>
           </View>

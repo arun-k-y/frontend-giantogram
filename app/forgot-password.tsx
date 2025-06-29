@@ -26,9 +26,6 @@ export default function ForgotPassword() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
 
-  // const baseUrl = "http://localhost:2001";
-  // const baseUrl = 'http://localhost:2001'
-
   // Updated validation functions to handle both email and phone
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -103,8 +100,38 @@ export default function ForgotPassword() {
           text1: data?.message || "Reset code sent successfully",
         });
 
-        if (data.redirect === true) {
-          // Navigate to the reset password page with identifier and type
+        // if (data.redirect === true) {
+        //   // Navigate to the reset password page with identifier and type
+        //   router.push({
+        //     pathname: "/choose-recovery",
+        //     params: {
+        //       identifier: data.identifier,
+        //     },
+        //   });
+        // } else {
+        //   router.push({
+        //     pathname: "/reset-password",
+        //     params: {
+        //       identifier: identifier.trim(),
+        //       identifierType,
+        //     },
+        //   });
+        // }
+
+        if (data.code === "MULTIPLE_USERS_FOUND") {
+          // Redirect to username selection screen
+          router.push({
+            pathname: "/choose-account",
+            params: {
+              identifier: id, // pass the email or mobile
+              usernames: JSON.stringify(data.usernames), // ⬅️ Pass encoded array
+            },
+          });
+        } else if (
+          data.redirect === true ||
+          data.code === "CHOOSE_RECOVERY_METHOD"
+        ) {
+          // Original flow for recovery options from username
           router.push({
             pathname: "/choose-recovery",
             params: {
@@ -112,10 +139,11 @@ export default function ForgotPassword() {
             },
           });
         } else {
+          // Continue to reset-password directly
           router.push({
             pathname: "/reset-password",
             params: {
-              identifier: identifier.trim(),
+              identifier: id,
               identifierType,
             },
           });

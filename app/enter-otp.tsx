@@ -74,23 +74,6 @@ export default function EnterOtp() {
       const result = await response.json();
 
       if (response.ok && result?.token) {
-        // Store user data
-        // await AsyncStorage.setItem("userToken", result.token);
-        // await AsyncStorage.setItem(
-        //   "isDeactivated",
-        //   JSON.stringify(result?.user?.isDeactivated || false)
-        // );
-
-        // // Store email if available
-        // if (result.user?.email) {
-        //   await AsyncStorage.setItem("userEmail", result.user.email);
-        // }
-
-        // // Store mobile if available
-        // if (result.user?.mobile) {
-        //   await AsyncStorage.setItem("userMobile", result.user.mobile);
-        // }
-
         setAuthData(
           {
             accessToken: String(result.token),

@@ -26,7 +26,6 @@ import CustomGalleryScreen from "./components/CustomGallery";
 // Constants
 const DEFAULT_AVATAR =
   "https://ui-avatars.com/api/?name=User&background=random";
-// const baseUrl = "http://localhost:2001";
 
 // Screen constants
 const SCREENS = {
@@ -185,6 +184,7 @@ export default function ProfilePicUploader({
 
         const uploadedUrl = data?.url || data?.profilePicture || preview;
         onUpload?.(uploadedUrl);
+        setPreview(uploadedUrl); // ✅ Add this line
         setImage(null);
         setCurrentScreen(SCREENS.CONFIRMATION);
       } catch (error: any) {
@@ -215,6 +215,8 @@ export default function ProfilePicUploader({
   // Camera handlers
   const handleCameraPhoto = useCallback((uri: string) => {
     // Create a mock ImagePickerAsset for consistency
+
+    console.log("uri.....", uri)
     const cameraImage: ImagePicker.ImagePickerAsset = {
       uri,
       width: 0,

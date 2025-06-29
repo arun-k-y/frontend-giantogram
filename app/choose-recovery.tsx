@@ -214,7 +214,6 @@ export default function ChooseRecoveryMethod() {
   const [emailOptions, setEmailOptions] = useState<string[]>([]);
   const [phoneOptions, setPhoneOptions] = useState<string[]>([]);
   const { identifier } = useLocalSearchParams();
-  // const baseUrl = "http://localhost:2001";
   const router = useRouter();
 
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
@@ -245,7 +244,7 @@ export default function ChooseRecoveryMethod() {
   }, []);
 
   const maskPhone = (phone: string) => {
-    return phone.replace(/(\d{2})(\d{2})(\d{4})(\d{2})/, "+$1 **** $4");
+    return phone.replace(/(\d{2})(\d{2})(\d{4})(\d{2})/, "$1 **** $4");
   };
 
   const maskEmail = (email: string) => {

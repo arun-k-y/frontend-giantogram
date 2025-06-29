@@ -46,8 +46,8 @@ export default function SetPassword() {
     if (errors.newPassword) {
       if (!newPassword.trim()) {
         setErrorMessage("New password is required");
-      } else {
-        setErrorMessage("Password must be at least 6 characters");
+      } else if(newPassword.length<8) {
+        setErrorMessage("Password must be at least 8 characters");
       }
       return false;
     }
