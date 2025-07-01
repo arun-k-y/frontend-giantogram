@@ -4,7 +4,7 @@
     "slug": "my-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/image_logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "jsEngine": "hermes",
     "userInterfaceStyle": "automatic",
@@ -15,11 +15,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.arun100.myapp"
+      "package": "com.arun100.myapp",
+       "jsEngine": "hermes"
     },
     "web": {
       "bundler": "metro",

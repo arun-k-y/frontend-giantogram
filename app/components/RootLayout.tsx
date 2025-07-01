@@ -43,9 +43,9 @@ export default function RootLayout() {
           console.log("✅ Token validity:", isValid);
 
           if (isValid) {
-            if (pathname !== "/home2") {
-              console.log("➡️ Redirecting to /home2...");
-              router.replace("/home2");
+            if (pathname !== "/home") {
+              console.log("➡️ Redirecting to /home...");
+              router.replace("/home");
             }
           } else {
             console.log("🚫 Invalid token. Removing from AsyncStorage...");
@@ -130,6 +130,7 @@ export default function RootLayout() {
               "choose-recovery",
               "remember-me",
               "choose-account",
+              "login-otp"
             ].map((name) => (
               <Stack.Screen
                 key={name}

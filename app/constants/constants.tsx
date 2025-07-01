@@ -4,12 +4,12 @@ const genderOptions = [
   { label: "Other", value: "Other" },
 ];
 const navigationIcons = [
-  { icon: require("../assets/images/home.png"), name: "Home" },
-  { icon: require("../assets/images/tiktok.png"), name: "TikTok" },
-  { icon: require("../assets/images/wifi.png"), name: "WiFi" },
-  { icon: require("../assets/images/youtube.png"), name: "YouTube" },
-  { icon: require("../assets/images/piramid.png"), name: "Triangle" },
-  { icon: require("../assets/images/account.png"), name: "Account" },
+  { icon: require("../../assets/images/home.png"), name: "Home" },
+  { icon: require("../../assets/images/tiktok.png"), name: "TikTok" },
+  { icon: require("../../assets/images/wifi.png"), name: "WiFi" },
+  { icon: require("../../assets/images/youtube.png"), name: "YouTube" },
+  { icon: require("../../assets/images/piramid.png"), name: "Triangle" },
+  { icon: require("../../assets/images/account.png"), name: "Account" },
 ];
 
 const countryCodeOptions = [

@@ -30,7 +30,7 @@ export default function RememberMe() {
     if (Platform.OS === "android" || Platform.OS === "ios") {
       router.replace("/profile-pic");
     } else {
-      router.replace("/home2");
+      router.replace("/home");
     }
   };
 
@@ -49,7 +49,7 @@ export default function RememberMe() {
       router.replace("/profile-pic");
       // router.replace("/choose-recovery");
     } else {
-      router.replace("/home2");
+      router.replace("/home");
     }
   };
 

@@ -18,6 +18,7 @@ import DeactivatedAccountModal from "./components/DeactivatedAccountModal";
 import { baseUrl } from "./config/config";
 import { ErrorPopup } from "./components/ErrorPopup";
 import useErrorMessage from "./hooks/useErrorMessage";
+import RNOtpVerify from "react-native-otp-verify";
 
 export default function Verify2FA() {
   const [otp, setOtp] = useState("");
@@ -39,7 +40,15 @@ export default function Verify2FA() {
   const maskedDestination = params.maskedDestination || "";
   const identifier = params.identifier || "";
 
-  // const baseUrl = "http://localhost:2001";
+  RNOtpVerify.getOtp()
+    .then(() =>
+      RNOtpVerify.addListener((message) => {
+        const otp = message.match(/\d{6}/)?.[0];
+        if (otp) setOtp(otp); // autofill input
+        RNOtpVerify.removeListener();
+      })
+    )
+    .catch(console.log);
 
   // Countdown timer for resend button
   useEffect(() => {

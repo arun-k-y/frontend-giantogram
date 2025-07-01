@@ -142,7 +142,7 @@ export default function Login() {
       });
 
       const data = await response.json();
-      console.log("datadata.....", data)
+      console.log("datadata.....", data);
       if (response.ok) {
         Toast.show({
           type: "success",
@@ -270,7 +270,14 @@ export default function Login() {
             </Text>
           )}
         </TouchableOpacity>
-
+        
+          <TouchableOpacity
+            className="bg-white py-2 px-2 rounded-lg"
+            onPress={() => router.push("/login-otp" as any)}
+          >
+            <Text className="text-[#332E2E] font-normal">Login with OTP</Text>
+          </TouchableOpacity>
+        
         <View className="mt-40 flex w-full flex-row justify-between">
           <TouchableOpacity
             className="bg-white py-2 px-2 rounded-lg"
@@ -288,6 +295,31 @@ export default function Login() {
             <Text className="text-[#332E2E] font-normal">Forgot Password?</Text>
           </TouchableOpacity>
         </View>
+
+        {/* <View className="mt-40 flex w-full flex-row justify-between flex-wrap gap-4">
+          <TouchableOpacity
+            className="bg-white py-2 px-2 rounded-lg"
+            onPress={() => router.push("/signup")}
+          >
+            <Text className="text-[#332E2E] font-normal">
+              Create new account
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-white py-2 px-2 rounded-lg"
+            onPress={() => router.push("/forgot-password")}
+          >
+            <Text className="text-[#332E2E] font-normal">Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-white py-2 px-2 rounded-lg"
+            onPress={() => router.push("/login-otp" as any)}
+          >
+            <Text className="text-[#332E2E] font-normal">Login with OTP</Text>
+          </TouchableOpacity>
+        </View> */}
       </View>
     );
   };

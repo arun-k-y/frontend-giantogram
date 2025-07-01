@@ -204,7 +204,7 @@ export default function ProfilePicUploader({
     if (onContinue) {
       onContinue();
     } else {
-      router.push("/home2");
+      router.push("/home");
     }
   }, [onContinue, router]);
 

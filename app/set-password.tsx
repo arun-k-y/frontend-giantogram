@@ -112,7 +112,7 @@ export default function SetPassword() {
           router.replace("/profile-pic");
           // router.replace("/choose-recovery");
         } else {
-          router.replace("/home2");
+          router.replace("/home");
         }
       } else {
         showError(data.message || "Failed to set password");
