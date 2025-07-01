@@ -1,4 +1,3 @@
-// hooks/useErrorMessage.ts
 import { useState, useEffect } from "react";
 import { Animated, Keyboard, Vibration } from "react-native";
 
@@ -23,8 +22,8 @@ export default function useErrorMessage() {
   }, [errorMessage]);
 
   const showError = (message: string) => {
-    if(message?.length===0){
-        return
+    if (message?.length === 0) {
+      return;
     }
     const newError: ErrorMessage = {
       id: Date.now().toString(),

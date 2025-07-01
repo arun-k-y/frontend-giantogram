@@ -29,7 +29,6 @@ export default function Login() {
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
 
-  // const baseUrl = 'http://localhost:2001'
   const { errorMessage, showError, dismissError, slideAnim } =
     useErrorMessage();
 
@@ -51,7 +50,6 @@ export default function Login() {
 
   const validateUsername = (username: string) => {
     // Username validation: 3-30 characters, alphanumeric and underscores only
-    // Adjust this regex based on your username requirements
     const usernameRegex = /^[a-zA-Z0-9_]{3,25}$/;
     return usernameRegex.test(username);
   };

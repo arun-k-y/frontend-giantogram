@@ -20,7 +20,7 @@ import { useRouter } from "expo-router";
 import CustomCamera from "./components/CustomCamera";
 import BackButton from "./components/BackButton";
 import * as FileSystem from "expo-file-system";
-import { useAuth } from "./components/auth-context";
+import { useAuth } from "./providers/auth-context";
 import CustomGalleryScreen from "./components/CustomGallery";
 
 // Constants
@@ -216,7 +216,6 @@ export default function ProfilePicUploader({
   const handleCameraPhoto = useCallback((uri: string) => {
     // Create a mock ImagePickerAsset for consistency
 
-    console.log("uri.....", uri)
     const cameraImage: ImagePicker.ImagePickerAsset = {
       uri,
       width: 0,
@@ -233,23 +232,6 @@ export default function ProfilePicUploader({
     // setCurrentScreen(SCREENS.PREVIEW);
     uploadImage(cameraImage);
   }, []);
-
-  // const handleGallerySelect = useCallback((uri: string) => {
-  //   const selectedImage: ImagePicker.ImagePickerAsset = {
-  //     uri,
-  //     width: 0,
-  //     height: 0,
-  //     assetId: null,
-  //     fileName: `gallery_${Date.now()}.jpg`,
-  //     fileSize: 0,
-  //     type: "image",
-  //     mimeType: "image/jpeg",
-  //   };
-
-  //   setImage(selectedImage);
-  //   setPreview(uri);
-  //   setCurrentScreen(SCREENS.PREVIEW);
-  // }, []);
 
   const handleGallerySelect = useCallback(
     (imageData: {
@@ -287,10 +269,7 @@ export default function ProfilePicUploader({
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.welcomeContent}>
-        {/* <Text style={styles.welcomeTitle}>Welcome to Giantogram</Text>
-        <Text style={styles.welcomeSubtitle}>
-          Platform that provides everything
-        </Text> */}
+      
         <Text className="text-white font-normal text-2xl">
           Welcome to Giantogram
         </Text>
@@ -390,7 +369,6 @@ export default function ProfilePicUploader({
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.confirmationContent}>
-        {/* <Text style={styles.title}>GIANTOGRAM</Text> */}
         <Text style={styles.subtitle}>Welcome to Giantogram</Text>
         <Text style={styles.description}>
           Platform that provides everything
@@ -427,43 +405,6 @@ export default function ProfilePicUploader({
     </ScrollView>
   );
 
-  // const PopupScreen = () => (
-  //   <View style={styles.popupContainer}>
-  //     <View style={styles.popupContent}>
-
-  //       <TouchableOpacity
-  //         style={styles.popupButton}
-  //         onPress={() => handleScreenChange(SCREENS.CAMERA)}
-  //         accessibilityLabel="Open camera"
-  //         accessibilityRole="button"
-  //       >
-  //         <Text style={styles.popupButtonText}>Take Photo</Text>
-  //       </TouchableOpacity>
-
-  //       <TouchableOpacity
-  //         style={styles.popupButton}
-  //         // onPress={() => pickImageFromSource(false)}
-  //         onPress={() => handleScreenChange(SCREENS.CUSTOM_GALLERY)}
-  //         accessibilityLabel="Gallery"
-  //         accessibilityRole="button"
-  //       >
-  //         <Text style={styles.popupButtonText}>Choose from Gallery</Text>
-  //       </TouchableOpacity>
-
-  //       <TouchableOpacity
-  //         style={styles.popupCancelButton}
-  //         onPress={() => handleScreenChange(SCREENS.WELCOME)}
-  //         accessibilityLabel="Cancel"
-  //         accessibilityRole="button"
-  //       >
-  //         <Text style={styles.popupCancelText}>Cancel</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   </View>
-  // );
-
-  // Render current screen
-
   const PopupScreen = ({ visible, onClose, onCamera, onGallery }: any) => {
     return (
       <Modal
@@ -499,8 +440,6 @@ export default function ProfilePicUploader({
                 Gallery
               </Text>
             </TouchableOpacity>
-
-           
           </View>
         </View>
       </Modal>
@@ -514,7 +453,7 @@ export default function ProfilePicUploader({
       case SCREENS.CAMERA:
         return (
           <CustomCamera
-          uploadState={uploadState}
+            uploadState={uploadState}
             onPhotoTaken={handleCameraPhoto}
             onClose={() => handleScreenChange(SCREENS.WELCOME)}
           />

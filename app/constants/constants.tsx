@@ -1,10 +1,18 @@
-export const genderOptions = [
+const genderOptions = [
   { label: "Male", value: "Male" },
   { label: "Female", value: "Female" },
   { label: "Other", value: "Other" },
 ];
+const navigationIcons = [
+  { icon: require("../assets/images/home.png"), name: "Home" },
+  { icon: require("../assets/images/tiktok.png"), name: "TikTok" },
+  { icon: require("../assets/images/wifi.png"), name: "WiFi" },
+  { icon: require("../assets/images/youtube.png"), name: "YouTube" },
+  { icon: require("../assets/images/piramid.png"), name: "Triangle" },
+  { icon: require("../assets/images/account.png"), name: "Account" },
+];
 
-export const countryCodeOptions = [
+const countryCodeOptions = [
   { code: "+91", country: "IN", name: "India" },
   { code: "+93", country: "AF", name: "Afghanistan" },
   { code: "+355", country: "AL", name: "Albania" },
@@ -246,3 +254,5 @@ export const countryCodeOptions = [
   { code: "+260", country: "ZM", name: "Zambia" },
   { code: "+263", country: "ZW", name: "Zimbabwe" },
 ];
+
+export { countryCodeOptions, genderOptions, navigationIcons };

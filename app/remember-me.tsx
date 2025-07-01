@@ -9,13 +9,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useAuth } from "./components/auth-context";
+import { useAuth } from "./providers/auth-context";
 
 export default function RememberMe() {
   const router = useRouter();
   const { token, email, mobile, isDeactivated } = useLocalSearchParams();
-  const safeString = (value: string | string[] | undefined): string =>
-    Array.isArray(value) ? value[0] : value || "";
   const { setAuthData } = useAuth();
 
   const handleNotNow = () => {
@@ -31,7 +29,6 @@ export default function RememberMe() {
 
     if (Platform.OS === "android" || Platform.OS === "ios") {
       router.replace("/profile-pic");
-      // router.replace("/choose-recovery");
     } else {
       router.replace("/home2");
     }
@@ -66,7 +63,6 @@ export default function RememberMe() {
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 32,
-          //   paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
       >

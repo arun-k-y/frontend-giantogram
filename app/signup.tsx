@@ -12,9 +12,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { CountryPickerModal } from "./components/CountryPickerModal";
 import { Dropdown } from "react-native-element-dropdown";
-import { countryCodeOptions, genderOptions } from "./constants/constants";
+import { genderOptions } from "./constants/constants";
 import BackButton from "./components/BackButton";
 import useErrorMessage from "./hooks/useErrorMessage";
 import { ErrorPopup } from "./components/ErrorPopup";
@@ -30,37 +29,22 @@ if (Platform.OS !== "web") {
 export default function SignUp() {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
 
   const [username, setUsername] = useState("");
   const [emailOrMobile, setEmailOrMobile] = useState("");
   const [selectedCountryCode, setSelectedCountryCode] = useState("+91");
   const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState<Date | null>(null);
   const [dobText, setDobText] = useState(""); // For web text input
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
-    useState(false);
 
   const { errorMessage, showError, dismissError, slideAnim } =
     useErrorMessage();
 
-  // State to track which fields have errors
   const [fieldErrors, setFieldErrors] = useState({
-    // username: false,
-    // emailOrMobile: false,
-    // // password: false,
-    // // confirmPassword: false,
-    // gender: false,
-    // dob: false,
-    // name: false,
-
     name: false,
     emailOrMobile: false,
     username: false,
@@ -68,9 +52,6 @@ export default function SignUp() {
     dob: false,
     gender: false,
   });
-
-  // const baseUrl = "http://localhost:2001";
-  // const baseUrl = "http://localhost:2001";
 
   const detectInputType = (input: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,37 +68,6 @@ export default function SignUp() {
       return selectedCountryCode + emailOrMobile.trim();
     }
     return emailOrMobile.trim();
-  };
-
-  const validateDateOfBirth = (date: Date | null) => {
-    if (!date) return false;
-    const today = new Date();
-    const age = today.getFullYear() - date.getFullYear();
-    const monthDiff = today.getMonth() - date.getMonth();
-    const dayDiff = today.getDate() - date.getDate();
-
-    // Adjust age if birth month/day hasn't occurred this year
-    const actualAge =
-      monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
-
-    return actualAge >= 13 && actualAge <= 150 && date <= today;
-  };
-
-  const validateDateString = (dateString: string) => {
-    if (!dateString) return false;
-
-    // Check format YYYY-MM-DD or MM/DD/YYYY or DD/MM/YYYY
-    const patterns = [
-      /^\d{4}-\d{2}-\d{2}$/, // YYYY-MM-DD
-      /^\d{2}\/\d{2}\/\d{4}$/, // MM/DD/YYYY or DD/MM/YYYY
-      /^\d{1,2}\/\d{1,2}\/\d{4}$/, // M/D/YYYY or D/M/YYYY
-    ];
-
-    const isValidFormat = patterns.some((pattern) => pattern.test(dateString));
-    if (!isValidFormat) return false;
-
-    const date = new Date(dateString);
-    return !isNaN(date.getTime()) && validateDateOfBirth(date);
   };
 
   const formatDateForDisplay = (date: Date | null) => {
@@ -335,14 +285,7 @@ export default function SignUp() {
 
       const data = await response.json();
       if (response.ok) {
-        // Toast.show({
-        //   type: "success",
-        //   text1: "Sign up successful!",
-        //   text2: data.message,
-        // });
-
         const identifier = username;
-        // inputType === "email" ? emailOrMobile.trim() : getFullMobileNumber();
 
         router.push({
           pathname: "/enter-otp" as any,
@@ -368,9 +311,7 @@ export default function SignUp() {
           case "INVALID_MOBILE":
             setFieldErrors((prev) => ({ ...prev, emailOrMobile: true }));
             break;
-          // case "WEAK_PASSWORD":
-          //   setFieldErrors((prev) => ({ ...prev, password: true }));
-          //   break;
+
           case "INVALID_AGE":
             setFieldErrors((prev) => ({ ...prev, dob: true }));
             break;
@@ -392,14 +333,6 @@ export default function SignUp() {
 
   const getInputStyle = (hasError: boolean) => {
     return `w-full rounded-[10px] py-5 px-5 ${
-      hasError
-        ? "bg-white border text-[#F11111] border-[#FF6B6B]"
-        : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
-    }`;
-  };
-
-  const getPasswordInputStyle = (hasError: boolean) => {
-    return `w-full rounded-[10px] py-5 px-5 pr-14 ${
       hasError
         ? "bg-white border text-[#F11111] border-[#FF6B6B]"
         : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
@@ -446,50 +379,6 @@ export default function SignUp() {
         placeholderTextColor="#555"
         style={{ fontSize: 18 }}
       />
-
-      {/* <View className="w-full mb-4 relative">
-        <View className="flex-row">
-          {isMobileInput && (
-            <TouchableOpacity
-              onPress={() =>
-                setShowCountryCodeDropdown(!showCountryCodeDropdown)
-              }
-              className={` px-3 rounded-l-[10px] border-r-0 flex-row items-center justify-center min-w-[80px] ${
-                fieldErrors.emailOrMobile
-                  ? "bg-white border text-[#F11111] border-[#FF6B6B]"
-                  : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
-              }`}
-            >
-              <Text className="text-[#170202] text-lg mr-1">
-                {selectedCountryCode}
-              </Text>
-              <Text className="text-[#170202] text-sm">
-                {showCountryCodeDropdown ? "▲" : "▼"}
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          <TextInput
-            className={`flex-1 text-[#170202]  py-5 px-5 ${
-              fieldErrors.emailOrMobile
-                ? "bg-white border text-[#F11111] border-[#FF6B6B]"
-                : "bg-white border text-[#1F1E1E] border-[#B2EBF2]"
-            } ${
-              isMobileInput ? "rounded-r-[10px] border-l-0" : "rounded-[10px]"
-            }`}
-            placeholder="Email or Mobile Number"
-            value={emailOrMobile}
-            onChangeText={(val) => {
-              setEmailOrMobile(val);
-              clearFieldError("emailOrMobile");
-            }}
-            keyboardType="default"
-            autoCapitalize="none"
-            placeholderTextColor="#555"
-            style={{ fontSize: 18 }}
-          />
-        </View>
-      </View> */}
 
       <EmailOrPhoneInput
         identifier={emailOrMobile}
@@ -710,18 +599,6 @@ export default function SignUp() {
             onDismiss={dismissError}
           />
         </>
-      )}
-
-      {showCountryCodeDropdown && (
-        <CountryPickerModal
-          visible={showCountryCodeDropdown}
-          onClose={() => setShowCountryCodeDropdown(false)}
-          onSelect={(code) => {
-            setSelectedCountryCode(code);
-            setShowCountryCodeDropdown(false);
-          }}
-          countryOptions={countryCodeOptions}
-        />
       )}
     </>
   );

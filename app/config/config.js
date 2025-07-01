@@ -1,4 +1,3 @@
-// config.js
 export const baseUrl = "https://my-react-app-latest-8e2v.onrender.com";
 
 

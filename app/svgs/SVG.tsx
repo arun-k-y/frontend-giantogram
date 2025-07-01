@@ -1,5 +1,5 @@
 import * as React from "react";
-import Svg, { Defs, ClipPath, Rect, G, Path, Line, Pattern, Use, Image } from "react-native-svg";
+import Svg, { Defs, ClipPath, Rect, G, Path, Line } from "react-native-svg";
 export const EyeSVG = (props: any) => (
   <Svg
     width={36}
@@ -77,10 +77,8 @@ export const ClosedEyeSVG = (props: any) => (
   </Svg>
 );
 
-
-
 export const BackBtn = (props: any) => (
- <Svg width="25" height="25" viewBox="0 0 25 25" fill="none" {...props}>
+  <Svg width="25" height="25" viewBox="0 0 25 25" fill="none" {...props}>
     <Path
       d="M17 0C21.4189 0 25 3.58112 25 8V17C25 21.4189 21.4189 25 17 25H8C3.58112 25 0 21.4189 0 17V8C0 3.58112 3.58112 0 8 0H17Z"
       fill="#EEE"
@@ -91,4 +89,3 @@ export const BackBtn = (props: any) => (
     />
   </Svg>
 );
-

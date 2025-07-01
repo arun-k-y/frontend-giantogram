@@ -20,7 +20,7 @@ import { ErrorPopup } from "./components/ErrorPopup";
 import useErrorMessage from "./hooks/useErrorMessage";
 
 export default function ResetPassword() {
-  const { identifier, username } = useLocalSearchParams();
+  const { identifier } = useLocalSearchParams();
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -254,30 +254,6 @@ export default function ResetPassword() {
             </Text>
           )}
         </TouchableOpacity>
-
-        {/* <View className="mt-16 flex w-full flex-row justify-between">
-          <TouchableOpacity onPress={() => router.push("/login" as never)}>
-            <Text className="text-[#000000] font-normal">
-              Back to Login
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push("/forgot-password" as never)}>
-            <Text className="text-[#000000] font-normal">
-              Resend Code
-            </Text>
-          </TouchableOpacity>
-        </View> */}
-
-        {/* {errorMessage !== "" && (
-          <View className="absolute bottom-0 w-full">
-            <View className=" py-5">
-              <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
-                {`[ ${errorMessage} ]`}
-              </Text>
-            </View>
-          </View>
-        )} */}
       </View>
     );
   };

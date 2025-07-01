@@ -1,77 +1,64 @@
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ScrollView,
+  BackHandler,
+  ActivityIndicator,
+} from "react-native";
+import { LogOutIcon, Edit3, UserX, UserCheck } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Alert,
-  Animated,
-  BackHandler,
-  Modal,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
-import Toast from "react-native-toast-message";
-import { useAuth } from "./components/auth-context";
+import { useAuth } from "./providers/auth-context";
+import ConfirmationModal from "./components/ConfirmationModal"; 
 import { baseUrl } from "./config/config";
+import { navigationIcons } from "./constants/constants";
 
-const Home = () => {
-  const router = useRouter();
-
+export default function HomePage() {
+  const [profileImage, setProfileImage] = useState(null);
+  const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    message: "",
+    confirmText: "",
+    cancelText: "Cancel",
+    confirmButtonStyle: "default",
+    onConfirm: () => {},
+  });
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isDeactivated, setIsDeactivated] = useState<boolean | null>(null);
-  const [modalType, setModalType] = useState<
-    "deactivate" | "reactivate" | "logout" | null
-  >(null);
-  const [message, setMessage] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [username, setUserName] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-  const { accessToken, email, mobile } = useAuth();
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [slideAnim] = useState(new Animated.Value(50));
+
+  const router = useRouter();
+  const { accessToken } = useAuth();
 
   useEffect(() => {
     fetchUserData();
-
-    // Animate page entrance
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start();
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       const handleBackPress = () => {
-        Alert.alert("Exit App", "Are you sure you want to exit?", [
-          {
-            text: "Cancel",
-
-            onPress: () => null,
-            style: "cancel",
+        setModalConfig({
+          title: "Exit App",
+          message: "Are you sure you want to exit?",
+          confirmText: "Exit",
+          cancelText: "Cancel",
+          confirmButtonStyle: "danger",
+          onConfirm: () => {
+            setShowModal(false);
+            BackHandler.exitApp();
           },
-          {
-            text: "Exit",
-            onPress: () => BackHandler.exitApp(),
-            style: "default",
-          },
-        ]);
-
+        });
+        setShowModal(true);
         return true;
       };
+
       const subscription = BackHandler.addEventListener(
         "hardwareBackPress",
         handleBackPress
@@ -83,15 +70,10 @@ const Home = () => {
 
   const fetchUserData = async () => {
     try {
+      setIsProfileLoading(true);
+
       const token = accessToken;
-
-      if (!token) {
-        showToast("error", "No token found, please login.");
-        router.replace("/login");
-        return;
-      }
-
-      setUserEmail(email || "");
+      if (!token) return;
 
       const res = await fetch(`${baseUrl}/api/auth/protected`, {
         method: "GET",
@@ -103,40 +85,19 @@ const Home = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        showToast("error", errorData.message || "Failed to fetch user data");
+        console.warn("User fetch error:", errorData.message);
         return;
       }
 
       const data = await res.json();
-      setMessage(data?.message);
-      setUserName(data?.user?.username);
+      setUsername(data.user.username || "GIANTOGRAM");
+      setProfileImage(data.user.profilePicture || null);
       setIsDeactivated(data.user?.isDeactivated ?? false);
-
-      // Mock user stats - replace with actual API data
-
-      await AsyncStorage.setItem(
-        "isDeactivated",
-        data.user?.isDeactivated ? "true" : "false"
-      );
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      showToast("error", "Server error while fetching user data");
+      console.error("Fetch error:", error);
+    } finally {
+      setIsProfileLoading(false);
     }
-  };
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchUserData();
-    setRefreshing(false);
-    showToast("success", "Dashboard refreshed");
-  }, []);
-
-  const showToast = (type: any, text1: any, text2 = "") =>
-    Toast.show({ type, text1, text2 });
-
-  const logout = async () => {
-    setModalType("logout");
-    setShowModal(true);
   };
 
   const confirmLogout = async () => {
@@ -146,629 +107,372 @@ const Home = () => {
         "isDeactivated",
         "userEmail",
       ]);
-      showToast("success", "Logged out successfully");
+      Alert.alert("Success", "Logged out successfully");
       router.replace("/login");
     } catch (error) {
-      console.error("Logout Error:", error);
-      showToast("error", "Failed to logout. Please try again.");
+      Alert.alert("Error", "Failed to logout. Please try again.");
     }
   };
 
-  const postToApi = async (endpoint: string, successMessage: string) => {
+  const confirmDeactivate = async () => {
     try {
-      // const [token, email, mobile] = await Promise.all([
-      //   AsyncStorage.getItem("userToken"),
-      //   AsyncStorage.getItem("userEmail"),
-      //   AsyncStorage.getItem("userMobile"),
-      // ]);
-
       const token = accessToken;
-
-      // const [token, email, mobile] = await Promise.all([
-      //   AsyncStorage.getItem("userToken"),
-      //   AsyncStorage.getItem("userEmail"),
-      //   AsyncStorage.getItem("userMobile"),
-      // ]);
-
-      const identifier = email || mobile;
-
-      if (!token || !identifier) {
-        showToast("error", "Missing token or identifier (email/mobile)");
+      if (!token) {
+        Alert.alert("Error", "Authentication token not found");
         return;
       }
 
-      const res = await fetch(`${baseUrl}/api/auth/${endpoint}`, {
+      const res = await fetch(`${baseUrl}/api/auth/deactivate`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ identifier }),
+        body: JSON.stringify({ identifier: username }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        showToast("success", successMessage);
-        if (endpoint === "deactivate") {
-          await AsyncStorage.setItem("isDeactivated", "true");
-          setIsDeactivated(true);
-        }
-        if (endpoint === "reactivate") {
-          await AsyncStorage.setItem("isDeactivated", "false");
-          setIsDeactivated(false);
-        }
-        setShowModal(false);
-      } else {
-        console.warn(`API error:`, data);
-        showToast("error", data.message || "Something went wrong");
+      if (!res.ok) {
+        const errorData = await res.json();
+        Alert.alert(
+          "Error",
+          errorData.message || "Failed to deactivate account"
+        );
+        return;
       }
+
+      await AsyncStorage.setItem("isDeactivated", "true");
+
+      Alert.alert(
+        "Account Deactivated",
+        "Your account has been temporarily deactivated. You can reactivate it anytime.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setIsDeactivated(true);
+              fetchUserData();
+            },
+          },
+        ]
+      );
     } catch (error) {
-      console.error(`${endpoint} error:`, error);
-      showToast("error", "Server error. Please try again.");
+      console.error("Deactivation error:", error);
+      Alert.alert("Error", "Failed to deactivate account. Please try again.");
     }
   };
 
-  const handleDeactivate = () => {
-    setModalType("deactivate");
-    setShowModal(true);
-  };
+  const confirmReactivate = async () => {
+    try {
+      const token = accessToken;
+      if (!token) {
+        Alert.alert("Error", "Authentication token not found");
+        return;
+      }
 
-  const handleActivate = () => {
-    setModalType("reactivate");
-    setShowModal(true);
-  };
+      const res = await fetch(`${baseUrl}/api/auth/reactivate`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ identifier: username }),
+      });
 
-  const confirmAction = async () => {
-    if (modalType === "deactivate") {
-      await postToApi("deactivate", "Account deactivated");
-    } else if (modalType === "reactivate") {
-      await postToApi("reactivate", "Account reactivated");
-    } else if (modalType === "logout") {
-      await confirmLogout();
+      if (!res.ok) {
+        const errorData = await res.json();
+        Alert.alert(
+          "Error",
+          errorData.message || "Failed to reactivate account"
+        );
+        return;
+      }
+
+      await AsyncStorage.removeItem("isDeactivated");
+
+      Alert.alert(
+        "Account Reactivated",
+        "Your account has been successfully reactivated. Welcome back!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setIsDeactivated(false);
+              fetchUserData();
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Reactivation error:", error);
+      Alert.alert("Error", "Failed to reactivate account. Please try again.");
     }
-    setShowModal(false);
   };
 
-  const getStatusBadge = () => {
-    if (isDeactivated === null) return null;
-
-    return (
-      <View
-        style={{
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          borderRadius: 20,
-          backgroundColor: isDeactivated ? "#FEE2E2" : "#D1FAE5",
-          borderWidth: 1,
-          borderColor: isDeactivated ? "#FECACA" : "#A7F3D0",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: "600",
-            color: isDeactivated ? "#DC2626" : "#059669",
-          }}
-        >
-          {isDeactivated ? "🔴 Deactivated" : "🟢 Active"}
-        </Text>
-      </View>
-    );
+  const handleLogoutPress = () => {
+    setModalConfig({
+      title: "Sign Out",
+      message: "Are you sure you want to sign out?",
+      confirmText: "Sign Out",
+      cancelText: "Cancel",
+      confirmButtonStyle: "danger",
+      onConfirm: () => {
+        setShowModal(false);
+        confirmLogout();
+      },
+    });
+    setShowModal(true);
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return "Good Morning";
-    if (hour >= 12 && hour < 17) return "Good Afternoon";
-    if (hour >= 17 && hour < 21) return "Good Evening";
-    return "Good Night";
+  const handleDeactivatePress = () => {
+    setModalConfig({
+      title: "Deactivate Account",
+      message:
+        "Are you sure you want to temporarily deactivate your account? You can reactivate it anytime by logging back in.",
+      confirmText: "Deactivate",
+      cancelText: "Cancel",
+      confirmButtonStyle: "warning",
+      onConfirm: () => {
+        setShowModal(false);
+        confirmDeactivate();
+      },
+    });
+    setShowModal(true);
   };
+
+  const handleReactivatePress = () => {
+    setModalConfig({
+      title: "Reactivate Account",
+      message:
+        "Are you sure you want to reactivate your account? You'll regain full access to all features.",
+      confirmText: "Reactivate",
+      cancelText: "Cancel",
+      confirmButtonStyle: "success",
+      onConfirm: () => {
+        setShowModal(false);
+        confirmReactivate();
+      },
+    });
+    setShowModal(true);
+  };
+
+  const handleRecoveryPress = () => {
+    router.push("/recovery-methods" as any);
+  };
+
+
 
   return (
-    <>
-      {/* <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" /> */}
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "#F8FAFC",
-        }}
-      >
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingVertical: Platform.OS === "ios" ? 60 : 40,
-            paddingHorizontal: 20,
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-              width: "100%",
-              maxWidth: 900,
-              alignSelf: "center",
-            }}
-          >
-            {/* Header Section */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 32,
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "#6B7280",
-                    marginBottom: 4,
-                  }}
-                >
-                  {getGreeting()}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 28,
-                    fontWeight: "700",
-                    color: "#111827",
-                  }}
-                >
-                  {username
-                    ? username.charAt(0).toUpperCase() +
-                      username.slice(1).toLowerCase()
-                    : "User"}
-                </Text>
-              </View>
-              {getStatusBadge()}
-            </View>
-
-            {/* Profile Card */}
-            <View
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: 24,
-                padding: 24,
-                marginBottom: 24,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.15,
-                shadowRadius: 20,
-                elevation: 10,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginBottom: 20,
-                }}
-              >
-                <View
-                  style={{
-                    width: 70,
-                    height: 70,
-                    borderRadius: 35,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginRight: 16,
-                    backgroundColor: "#667EEA",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                      fontSize: 26,
-                      fontWeight: "700",
-                    }}
-                  >
-                    {username ? username.charAt(0).toUpperCase() : "U"}
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "600",
-                      color: "#111827",
-                      marginBottom: 4,
-                    }}
-                  >
-                    {username
-                      ? username.charAt(0).toUpperCase() +
-                        username.slice(1).toLowerCase()
-                      : "User"}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: "#6B7280",
-                    }}
-                  >
-                    {userEmail}
-                  </Text>
-                </View>
-              </View>
-
-              {message && (
-                <View
-                  style={{
-                    backgroundColor: "#F0F9FF",
-                    borderRadius: 12,
-                    padding: 16,
-                    borderLeftWidth: 4,
-                    borderLeftColor: "#3B82F6",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#1E40AF",
-                      fontSize: 14,
-                      lineHeight: 20,
-                    }}
-                  >
-                    {message}
-                  </Text>
-                </View>
-              )}
-            </View>
-
-            {/* Stats Row */}
-
-            {/* Quick Actions */}
-            <View
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: 20,
-                padding: 24,
-                marginBottom: 24,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 12,
-                elevation: 6,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "600",
-                  color: "#111827",
-                  marginBottom: 20,
-                }}
-              >
-                Quick Actions
-              </Text>
-
-              <View style={{ gap: 12 }}>
-                {/* Account Status Action */}
-                {isDeactivated === false ? (
-                  <TouchableOpacity
-                    onPress={handleDeactivate}
-                    style={{
-                      backgroundColor: "#F59E0B",
-                      paddingVertical: 16,
-                      paddingHorizontal: 20,
-                      borderRadius: 16,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      shadowColor: "#F59E0B",
-                      shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                      elevation: 4,
-                    }}
-                  >
-                    <Text style={{ fontSize: 20, marginRight: 8 }}>⚠️</Text>
-                    <Text
-                      style={{
-                        color: "white",
-                        fontWeight: "600",
-                        fontSize: 16,
-                      }}
-                    >
-                      Deactivate Account
-                    </Text>
-                  </TouchableOpacity>
-                ) : isDeactivated === true ? (
-                  <TouchableOpacity
-                    onPress={handleActivate}
-                    style={{
-                      backgroundColor: "#10B981",
-                      paddingVertical: 16,
-                      paddingHorizontal: 20,
-                      borderRadius: 16,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      shadowColor: "#10B981",
-                      shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                      elevation: 4,
-                    }}
-                  >
-                    <Text style={{ fontSize: 20, marginRight: 8 }}>✅</Text>
-                    <Text
-                      style={{
-                        color: "white",
-                        fontWeight: "600",
-                        fontSize: 16,
-                      }}
-                    >
-                      Reactivate Account
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-
-                {/* Settings Button */}
-                <TouchableOpacity
-                  onPress={() => showToast("info", "Settings coming soon!")}
-                  style={{
-                    backgroundColor: "#6366F1",
-                    paddingVertical: 16,
-                    paddingHorizontal: 20,
-                    borderRadius: 16,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={{ fontSize: 20, marginRight: 8 }}>⚙️</Text>
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "600",
-                      fontSize: 16,
-                    }}
-                  >
-                    Account Settings
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Logout Button */}
-                <TouchableOpacity
-                  onPress={logout}
-                  style={{
-                    backgroundColor: "#EF4444",
-                    paddingVertical: 16,
-                    paddingHorizontal: 20,
-                    borderRadius: 16,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={{ fontSize: 20, marginRight: 8 }}>🚪</Text>
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "600",
-                      fontSize: 16,
-                    }}
-                  >
-                    Sign Out
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Help Card */}
-            <View
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: 20,
-                padding: 24,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 12,
-                elevation: 6,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "600",
-                  color: "#111827",
-                  marginBottom: 8,
-                }}
-              >
-                Need Help? 🤝
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#6B7280",
-                  lineHeight: 20,
-                  marginBottom: 16,
-                }}
-              >
-                If you have any questions or need assistance, feel free to
-                contact our support team.
-              </Text>
-              <TouchableOpacity
-                onPress={() =>
-                  showToast("info", "Support contact coming soon!")
-                }
-                style={{
-                  backgroundColor: "#F3F4F6",
-                  paddingVertical: 12,
-                  paddingHorizontal: 16,
-                  borderRadius: 12,
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#374151",
-                    fontWeight: "500",
-                    fontSize: 14,
-                  }}
-                >
-                  Contact Support
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </ScrollView>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>GIANTOGRAM</Text>
+        <View style={styles.headerIcons}>
+          <TouchableOpacity>
+            <Image
+              source={require("../assets/images/star.png")}
+              className="w-9 h-9"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image
+              source={require("../assets/images/search.png")}
+              className="w-9 h-9"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image
+              source={require("../assets/images/msg.png")}
+              className="w-9 h-9"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Enhanced Modal */}
-      <Modal visible={showModal} transparent animationType="fade">
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.6)",
-            paddingHorizontal: 20,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: 24,
-              padding: 32,
-              width: "100%",
-              maxWidth: 400,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 20 },
-              shadowOpacity: 0.25,
-              shadowRadius: 25,
-              elevation: 25,
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 20,
-                backgroundColor:
-                  modalType === "deactivate"
-                    ? "#FEE2E2"
-                    : modalType === "logout"
-                    ? "#FEF3C7"
-                    : "#D1FAE5",
-              }}
+      {/* Content */}
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Profile Card */}
+        <View style={styles.profileCard}>
+          <Text style={styles.brandName}>{username}</Text>
+
+          <View style={styles.profileImageContainer}>
+            {isProfileLoading ? (
+              <ActivityIndicator size="large" color="#10B981" />
+            ) : profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                style={styles.profileImage}
+              />
+            ) : (
+              <Image
+                source={require("../assets/images/profile-pic.jpg")}
+                style={styles.profileImage}
+              />
+            )}
+          </View>
+
+          {/* Account Status Indicator */}
+          {isDeactivated && (
+            <View style={styles.statusIndicator}>
+              <Text style={styles.statusText}>Account Deactivated</Text>
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={styles.profileActions}>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handleRecoveryPress}
             >
-              <Text style={{ fontSize: 36 }}>
-                {modalType === "deactivate"
-                  ? "⚠️"
-                  : modalType === "logout"
-                  ? "🚪"
-                  : "✅"}
+              <Edit3 color="#10B981" size={20} />
+              <Text style={[styles.modalButtonText, { color: "#10B981" }]}>
+                Recovery Methods
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "700",
-                color: "#111827",
-                textAlign: "center",
-                marginBottom: 12,
-              }}
-            >
-              {modalType === "deactivate"
-                ? "Deactivate Account"
-                : modalType === "logout"
-                ? "Sign Out"
-                : "Reactivate Account"}
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#6B7280",
-                textAlign: "center",
-                marginBottom: 28,
-                lineHeight: 24,
-              }}
-            >
-              {modalType === "deactivate"
-                ? "Your account will be temporarily deactivated. You can reactivate it anytime by signing in again."
-                : modalType === "logout"
-                ? "Are you sure you want to sign out of your account?"
-                : "Your account will be reactivated and you'll regain full access to all features."}
-            </Text>
-
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 12,
-                width: "100%",
-              }}
-            >
+            {/* Show Reactivate or Deactivate button based on account status */}
+            {isDeactivated ? (
               <TouchableOpacity
-                onPress={() => setShowModal(false)}
-                style={{
-                  flex: 1,
-                  backgroundColor: "#F9FAFB",
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: "#E5E7EB",
-                }}
+                style={styles.modalButton}
+                onPress={handleReactivatePress}
               >
-                <Text
-                  style={{
-                    color: "#374151",
-                    fontWeight: "600",
-                    fontSize: 16,
-                  }}
-                >
-                  Cancel
+                <UserCheck color="#10B981" size={20} />
+                <Text style={[styles.modalButtonText, { color: "#10B981" }]}>
+                  Reactivate Account
                 </Text>
               </TouchableOpacity>
-
+            ) : (
               <TouchableOpacity
-                onPress={confirmAction}
-                style={{
-                  flex: 1,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  backgroundColor:
-                    modalType === "deactivate"
-                      ? "#F59E0B"
-                      : modalType === "logout"
-                      ? "#EF4444"
-                      : "#10B981",
-                }}
+                style={styles.modalButton}
+                onPress={handleDeactivatePress}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "600",
-                    fontSize: 16,
-                  }}
-                >
-                  {modalType === "deactivate"
-                    ? "Deactivate"
-                    : modalType === "logout"
-                    ? "Sign Out"
-                    : "Reactivate"}
+                <UserX color="#F59E0B" size={20} />
+                <Text style={[styles.modalButtonText, { color: "#F59E0B" }]}>
+                  Deactivate Account
                 </Text>
               </TouchableOpacity>
-            </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handleLogoutPress}
+            >
+              <LogOutIcon color="#F97316" size={20} />
+              <Text style={[styles.modalButtonText, { color: "#F97316" }]}>
+                Sign Out
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </Modal>
-    </>
-  );
-};
 
-export default Home;
+        <View style={styles.contentSpace}>
+          <Text style={styles.welcomeText}>Welcome to GIANTOGRAM</Text>
+          <Text style={styles.subtitleText}>
+            {isDeactivated
+              ? "Your account is temporarily deactivated. Reactivate to resume your social media experience."
+              : "Your social media experience starts here"}
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Nav */}
+      <View style={styles.bottomNav}>
+        {navigationIcons.map((item, idx) => (
+          <TouchableOpacity key={idx} style={styles.navItem}>
+            <Image
+              source={item.icon}
+              className={`w-9 h-9 ${
+                idx === navigationIcons.length - 1 ? "rounded-full" : ""
+              }`}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Reusable Confirmation Modal */}
+      <ConfirmationModal
+        isVisible={showModal}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+        cancelText={modalConfig.cancelText}
+        confirmButtonStyle={modalConfig.confirmButtonStyle}
+        onConfirm={modalConfig.onConfirm}
+        onCancel={() => setShowModal(false)}
+      />
+    </View>
+  );
+}
+
+// Styles remain the same
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#1a1a1a" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    backgroundColor: "#0D0D0D",
+    alignItems: "center",
+  },
+  headerTitle: { color: "#fff", fontSize: 20, fontWeight: "600" },
+  headerIcons: { flexDirection: "row", gap: 15 },
+  content: { paddingHorizontal: 20, paddingBottom: 100 },
+  profileCard: {
+    backgroundColor: "#000",
+    borderRadius: 20,
+    padding: 30,
+    alignItems: "center",
+    marginTop: 40,
+  },
+  brandName: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 30,
+  },
+  profileImageContainer: { marginBottom: 25 },
+  profileImage: { width: 80, height: 80, borderRadius: 40 },
+  statusIndicator: {
+    backgroundColor: "#F59E0B",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  statusText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  profileActions: {
+    flexDirection: "row",
+    gap: 12,
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  modalButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#333",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    minWidth: 120,
+  },
+  modalButtonText: { marginLeft: 6, fontSize: 13, fontWeight: "500" },
+  contentSpace: { alignItems: "center", marginTop: 40 },
+  welcomeText: { color: "#fff", fontSize: 24, fontWeight: "600" },
+  subtitleText: {
+    color: "#aaa",
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  bottomNav: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#0D0D0D",
+    paddingVertical: 15,
+  },
+  navItem: { padding: 10 },
+});

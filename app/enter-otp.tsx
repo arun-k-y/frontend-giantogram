@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
 import {
@@ -15,7 +14,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import BackButton from "./components/BackButton";
-import { useAuth } from "./components/auth-context";
+import { useAuth } from "./providers/auth-context";
 import { baseUrl } from "./config/config";
 
 export default function EnterOtp() {
@@ -84,27 +83,11 @@ export default function EnterOtp() {
           false // 👈 DON'T REMEMBER, only in memory
         );
 
-        // Toast.show({
-        //   type: "success",
-        //   text1: "Login successful!",
-        // });
-
-        // if (result?.profilePicture === true) {
-        // Navigate to profile picture upload if required
-
-        //   router.replace("/home");
-        // } else {
-        // if (Platform.OS === "android" || Platform.OS === "ios") {
-        //   router.replace("/profile-pic");
-        // } else {
-        //   router.replace("/home2");
-        // }
-
+      
         router.replace({
           pathname: "/set-password",
         });
 
-        // }
       } else {
         // Handle specific error codes
         switch (result.code) {

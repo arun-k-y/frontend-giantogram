@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, usePathname, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -14,7 +13,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { toastConfig } from "../utils/ToastDesign";
 import "../../global.css";
-import { useAuth } from "./auth-context";
+import { useAuth } from "../providers/auth-context";
 import { baseUrl } from "../config/config";
 
 export default function RootLayout() {
@@ -30,31 +29,6 @@ export default function RootLayout() {
     },
     headerShadowVisible: false,
   };
-
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     try {
-  //       const token = await AsyncStorage.getItem("userToken");
-  //       if (token) {
-  //         const isValid = await validateToken(token);
-  //         if (isValid) {
-  //           if (pathname !== "/home2") router.replace("/home2");
-  //         } else {
-  //           await AsyncStorage.removeItem("userToken");
-  //           if (pathname !== "/login") router.replace("/login");
-  //         }
-  //       } else {
-  //         if (pathname !== "/login") router.replace("/login");
-  //       }
-  //     } catch {
-  //       if (pathname !== "/login") router.replace("/login");
-  //     } finally {
-  //       setIsChecking(false);
-  //     }
-  //   };
-
-  //   checkToken();
-  // }, []);
 
   useEffect(() => {
     if (!isReady) return;
@@ -101,70 +75,6 @@ export default function RootLayout() {
 
     checkToken();
   }, [isReady]);
-
-  // useEffect(() => {
-  //   if (!isReady) return;
-
-  //   if (accessToken) {
-  //     validateToken(accessToken).then((valid) => {
-  //       if (!valid) {
-  //         AsyncStorage.removeItem("userToken");
-  //         if (pathname !== "/login") router.replace("/login");
-  //       } else {
-  //         if (pathname !== "/home2") router.replace("/home2");
-  //       }
-  //     });
-  //   } else {
-  //     if (pathname !== "/login") router.replace("/login");
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const proceed = async () => {
-  //     console.log("🔁 Checking auth status...");
-
-  //     try {
-  //       if (accessToken) {
-  //         console.log("🔐 Found access token:", accessToken);
-
-  //         const valid = await validateToken(accessToken);
-  //         console.log("✅ Token validity:", valid);
-
-  //         if (!valid) {
-  //           console.log("🚫 Invalid token. Removing from AsyncStorage...");
-  //           await AsyncStorage.removeItem("userToken");
-
-  //           if (pathname !== "/login") {
-  //             console.log("🔁 Redirecting to /login...");
-  //             router.replace("/login");
-  //           }
-  //         } else {
-  //           if (pathname !== "/home2") {
-  //             console.log("✅ Valid token. Redirecting to /home2...");
-  //             router.replace("/home2");
-  //           }
-  //         }
-  //       } else {
-  //         console.log("❌ No access token found.");
-  //         if (pathname !== "/login") {
-  //           console.log("🔁 Redirecting to /login...");
-  //           router.replace("/login");
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("💥 Error during token validation:", error);
-  //       if (pathname !== "/login") {
-  //         console.log("🔁 Redirecting to /login due to error...");
-  //         router.replace("/login");
-  //       }
-  //     } finally {
-  //       console.log("✅ Finished auth check. Stopping loader...");
-  //       setIsChecking(false);
-  //     }
-  //   };
-
-  //   proceed();
-  // }, [isReady]);
 
   const validateToken = async (token: string): Promise<boolean> => {
     try {
@@ -234,15 +144,6 @@ export default function RootLayout() {
 
             <Stack.Screen
               name="home"
-              options={{
-                headerTitle: "",
-                headerStyle: { backgroundColor: "transparent" },
-                headerShown: false,
-              }}
-            />
-
-            <Stack.Screen
-              name="home2"
               options={{
                 ...screenOptions,
                 headerLeft: () => null,

@@ -23,7 +23,7 @@ interface EmailOrPhoneInputProps {
   showDropdown: boolean;
   setShowDropdown: (show: boolean) => void;
   placeholder?: string;
-  style?: string
+  style?: string;
 }
 
 const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
@@ -35,7 +35,7 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
   showDropdown,
   setShowDropdown,
   placeholder = "Email or Phone Number",
-  style="mb-12"
+  style = "mb-12",
 }) => {
   const trimmedIdentifier = identifier.trim();
   const identifierType = getIdentifierType(trimmedIdentifier);
@@ -71,32 +71,6 @@ const EmailOrPhoneInput: React.FC<EmailOrPhoneInputProps> = ({
         } ${isMobileInput ? "rounded-r-[10px]" : "rounded-[10px]"}`}
         placeholder={placeholder}
         value={identifier}
-        // onChangeText={onChange}
-        //      onChangeText={(text) => {
-        //   const trimmedText = text.trim();
-
-        //   if (trimmedText.startsWith("+")) {
-        //     // Try to find the longest matching code
-        //     const sortedOptions = [...countryCodeOptions].sort(
-        //       (a, b) => b.code.length - a.code.length
-        //     );
-        //     const matched = sortedOptions.find((c) =>
-        //       trimmedText.startsWith(c.code)
-        //     );
-
-        //     if (matched) {
-        //       setSelectedCountryCode(matched.code);
-
-        //       const mobileNumber = trimmedText.slice(matched.code.length);
-        //       onChange(mobileNumber.replace(/\D/g, "")); // Strip non-numeric
-        //       return;
-        //     }
-        //   }
-
-        //   // Default
-        //   onChange(trimmedText.replace(/\s/g, ""));
-        // }}
-
         onChangeText={(text) => {
           const trimmedText = text.trim();
 

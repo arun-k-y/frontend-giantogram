@@ -8,7 +8,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useAuth } from "./components/auth-context";
+import { useAuth } from "./providers/auth-context";
 import { baseUrl } from "./config/config";
 
 export default function RecoveryMethods() {

@@ -38,7 +38,6 @@ export default function ForgotPassword() {
   const validateMobile = (mobile: string) => /^\d{10}$/.test(mobile);
   const validateUsername = (username: string) => {
     // Username validation: 3-30 characters, alphanumeric and underscores only
-    // Adjust this regex based on your username requirements
     const usernameRegex = /^[a-zA-Z0-9_]{3,25}$/;
     return usernameRegex.test(username);
   };
@@ -79,17 +78,11 @@ export default function ForgotPassword() {
 
     setIsLoading(true);
     try {
-      // console.log("Attempting to send reset code to:", {
-      //   identifier,
-      //   type: identifierType,
-      // });
-
       let id = identifier.trim();
       if (identifierType === "mobile") {
         id = `${selectedCountryCode}${identifier.trim()}`;
       }
 
-      // Prepare the request body based on identifier type
       const requestBody = { identifier: id };
 
       const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
@@ -109,24 +102,6 @@ export default function ForgotPassword() {
           type: "success",
           text1: data?.message || "Reset code sent successfully",
         });
-
-        // if (data.redirect === true) {
-        //   // Navigate to the reset password page with identifier and type
-        //   router.push({
-        //     pathname: "/choose-recovery",
-        //     params: {
-        //       identifier: data.identifier,
-        //     },
-        //   });
-        // } else {
-        //   router.push({
-        //     pathname: "/reset-password",
-        //     params: {
-        //       identifier: identifier.trim(),
-        //       identifierType,
-        //     },
-        //   });
-        // }
 
         if (data.code === "MULTIPLE_USERS_FOUND") {
           // Redirect to username selection screen
@@ -180,15 +155,6 @@ export default function ForgotPassword() {
   const FormLayout = () => {
     return (
       <View className="flex-1 items-center pt-32 p-4 bg-[#0D0D0D] w-full md:w-[500px] self-center">
-        {/* <View className="mb-8 w-full">
-          <Text className="text-[#170202] text-2xl font-medium text-center mb-2">
-            Forgot Password?
-          </Text>
-          <Text className="text-[#555] text-base text-center px-4">
-            Enter your email address or phone number and we&apos;ll send you a reset code
-          </Text>
-        </View> */}
-
         <EmailOrPhoneInput
           identifier={identifier}
           onChange={(value) => {
@@ -217,26 +183,6 @@ export default function ForgotPassword() {
             </Text>
           )}
         </TouchableOpacity>
-
-        {/* <View className="mt-16 flex w-full flex-row justify-between">
-          <TouchableOpacity onPress={() => router.push("/login" as never)}>
-            <Text className="text-[#000000] font-normal">Back to Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push("/signup" as never)}>
-            <Text className="text-[#000000] font-normal">Create Account</Text>
-          </TouchableOpacity>
-        </View> */}
-
-        {/* {errorMessage !== "" && (
-          <View className="absolute bottom-0 w-full">
-            <View className="py-5">
-              <Text className="text-[#F11111] text-2xl px-2 text-center font-normal">
-                {`[ ${errorMessage} ]`}
-              </Text>
-            </View>
-          </View>
-        )} */}
       </View>
     );
   };
@@ -246,7 +192,6 @@ export default function ForgotPassword() {
       {Platform.OS === "web" ? (
         <>
           <BackButton title="Forgot Password" />
-          {/* <View style={{ height: 50, backgroundColor: "#0D0D0D" }} /> */}
 
           <ScrollView
             contentContainerStyle={{
