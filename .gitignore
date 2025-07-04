@@ -80,3 +80,8 @@ web/build/
 # macOS system files
 .DS_Store
 .vercel
+
+
+dist/*.html
+dist/favicon.ico
+dist/.DS_Store
