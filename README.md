@@ -1,50 +1,218 @@
-# Welcome to your Expo app 👋
+# Giantogram 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern React Native mobile application built with Expo, featuring comprehensive user authentication, profile management, and social media integration capabilities.
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+### Authentication & Security
+- **Multi-factor Authentication**: Email and SMS verification
+- **Flexible Login**: Support for email, phone number, or username login
+- **Secure Password Management**: Password reset and recovery options
+- **Account Management**: Account deactivation/reactivation capabilities
+- **Remember Me**: Persistent login sessions
 
+### User Profile & Settings
+- **Profile Management**: Complete user profile setup and editing
+- **Profile Pictures**: Camera and gallery integration for profile photos
+- **Date of Birth**: Age validation with minimum age requirements
+- **Gender Selection**: Inclusive gender options
+- **Country Code Support**: International phone number support with 200+ countries
+
+### User Experience
+- **Modern UI/UX**: Clean, responsive design with Tailwind CSS styling
+- **Cross-Platform**: Works on iOS, Android, and Web
+- **Toast Notifications**: User-friendly feedback messages
+- **Error Handling**: Comprehensive error management and validation
+- **Loading States**: Smooth loading indicators throughout the app
+
+### Technical Features
+- **TypeScript**: Full TypeScript support for better development experience
+- **File-based Routing**: Expo Router for intuitive navigation
+- **State Management**: React Context for authentication state
+- **Async Storage**: Local data persistence
+- **Camera Integration**: Native camera functionality
+- **Image Picker**: Gallery access for profile pictures
+
+## 🛠️ Tech Stack
+
+- **Framework**: React Native with Expo
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS (NativeWind)
+- **Navigation**: Expo Router
+- **State Management**: React Context API
+- **Storage**: AsyncStorage
+- **UI Components**: Custom components with Lucide React Native icons
+- **Backend**: RESTful API integration
+
+## 📱 Screenshots
+
+The app includes the following main screens:
+- Login/Signup
+- Email/Phone verification
+- Profile setup
+- Home dashboard
+- Account management
+- Recovery methods
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI
+- iOS Simulator (for iOS development)
+- Android Studio (for Android development)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd frontend
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
+   npm start
+   # or
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Run on your preferred platform**
+   ```bash
+   # iOS
+   npm run ios
+   
+   # Android
+   npm run android
+   
+   # Web
+   npm run web
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🔧 Configuration
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Environment Setup
 
-## Get a fresh project
+The app connects to a backend API. Update the base URL in `app/config/config.js`:
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```javascript
+export const baseUrl = "https://your-backend-url.com";
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### API Endpoints
 
-## Learn more
+The app expects the following API endpoints:
+- `POST /api/auth/signin` - User login
+- `POST /api/auth/signup` - User registration
+- `GET /api/auth/protected` - Protected user data
+- `PATCH /api/auth/deactivate` - Account deactivation
+- `PATCH /api/auth/reactivate` - Account reactivation
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📁 Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+frontend/
+├── app/                    # Main application code
+│   ├── components/         # Reusable UI components
+│   ├── config/            # Configuration files
+│   ├── constants/         # App constants and data
+│   ├── hooks/             # Custom React hooks
+│   ├── providers/         # Context providers
+│   ├── svgs/              # SVG components
+│   ├── utils/             # Utility functions
+│   └── *.tsx              # Screen components
+├── assets/                # Static assets
+│   ├── fonts/             # Custom fonts
+│   └── images/            # App images and icons
+├── package.json           # Dependencies and scripts
+└── README.md             # This file
+```
 
-## Join the community
+## 🎯 Key Components
 
-Join our community of developers creating universal apps.
+- **EmailOrPhoneInput**: Flexible input component for email/phone
+- **CustomCamera**: Native camera integration
+- **CustomGallery**: Image picker from gallery
+- **CountryPickerModal**: Country code selection
+- **ConfirmationModal**: Reusable confirmation dialogs
+- **ErrorPopup**: Error message display
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🔐 Authentication Flow
+
+1. **Login/Signup**: User enters credentials
+2. **Verification**: Email or SMS verification code
+3. **Profile Setup**: Complete profile information
+4. **Home**: Access to main app features
+
+## 📱 Platform Support
+
+- ✅ iOS (iPhone & iPad)
+- ✅ Android
+- ✅ Web (React Native Web)
+
+## 🚀 Deployment
+
+### Building for Production
+
+```bash
+# Build for iOS
+npx expo build:ios
+
+# Build for Android
+npx expo build:android
+
+# Build for Web
+npx expo build:web
+```
+
+### EAS Build (Recommended)
+
+```bash
+# Install EAS CLI
+npm install -g @expo/eas-cli
+
+# Configure EAS
+eas build:configure
+
+# Build for platforms
+eas build --platform ios
+eas build --platform android
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Expo documentation](https://docs.expo.dev/)
+2. Review the [React Native documentation](https://reactnative.dev/)
+3. Open an issue in this repository
+
+## 🙏 Acknowledgments
+
+- Built with [Expo](https://expo.dev/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from [Lucide React Native](https://lucide.dev/)
+- Toast notifications with [react-native-toast-message](https://github.com/calintamas/react-native-toast-message)
+
+---
+
+**Giantogram** - Modern mobile app development with React Native and Expo 🚀
